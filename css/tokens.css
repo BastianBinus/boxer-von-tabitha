@@ -1,0 +1,9 @@
+:root {
+  --color-bg: #F1ECE2;
+  --color-accent: #7A2E22;
+  --color-fawn: #C79A6B;
+  --color-ink: #241C15;
+  --font-display: "Bricolage Grotesque", serif;
+  --font-body: "Inter", sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+}
