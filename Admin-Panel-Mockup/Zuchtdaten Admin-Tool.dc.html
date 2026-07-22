@@ -1,0 +1,1369 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="./support.js"></script>
+</head>
+
+<body>
+  <x-dc>
+    <helmet>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link
+        href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+      <style>
+        body {
+          margin: 0;
+        }
+
+        ::selection {
+          background: oklch(80% 0.09 220 / 0.35);
+        }
+
+        input,
+        select,
+        textarea {
+          font-family: Manrope, sans-serif;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+          outline: 2px solid oklch(80% 0.09 220);
+          outline-offset: 1px;
+        }
+      </style>
+    </helmet>
+
+    <div style="{{ sx.page }}">
+
+      <sc-if value="{{ isLoginRoute }}" hint-placeholder-val="{{ false }}">
+        <div style="{{ sx.loginWrap }}">
+          <div style="{{ sx.loginCard }}">
+            <div style="{{ sx.loginKicker }}">Boxer vom Haus Tabitha</div>
+            <div style="{{ sx.loginTitle }}">Zuchtdaten Admin</div>
+            <div style="{{ sx.loginSub }}">Melden Sie sich an, um Hunde, Würfe und Käufer zu verwalten.</div>
+            <div style="display:flex;flex-direction:column;gap:6px;margin-top:8px;">
+              <label style="{{ sx.label }}">E-Mail</label>
+              <input type="email" value="{{ loginEmail }}" onChange="{{ onLoginEmail }}"
+                placeholder="oma@tabitha-boxer.de" style="{{ sx.input }}" />
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <label style="{{ sx.label }}">Passwort</label>
+              <input type="password" value="{{ loginPassword }}" onChange="{{ onLoginPassword }}" placeholder="••••••••"
+                style="{{ sx.input }}" />
+            </div>
+            <button onClick="{{ onLogin }}" style="{{ sx.btnPrimaryFull }}">Anmelden</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isAppRoute }}" hint-placeholder-val="{{ true }}">
+        <div style="{{ sx.shell }}">
+
+          <sc-if value="{{ showSidebar }}" hint-placeholder-val="{{ true }}">
+            <div style="{{ sx.sidebar }}">
+              <div style="{{ sx.sidebarBrand }}">
+                <div style="{{ sx.sidebarBrandName }}">Haus Tabitha</div>
+                <div style="{{ sx.sidebarBrandKicker }}">Admin</div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:4px;">
+                <button onClick="{{ goDogs }}" style="{{ sx.navItemDogs }}">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M3 10.5 12 4l9 6.5" />
+                    <path d="M5 9.5V19a1 1 0 0 0 1 1h4v-5h4v5h4a1 1 0 0 0 1-1V9.5" />
+                  </svg>
+                  <span>Hunde</span>
+                </button>
+                <button onClick="{{ goTrash }}" style="{{ sx.navItemTrash }}">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M4 7h16" />
+                    <path d="M9 7V4h6v3" />
+                    <path d="M6 7l1 13h10l1-13" />
+                  </svg>
+                  <span>Papierkorb</span>
+                </button>
+              </div>
+              <div style="{{ sx.sidebarFooter }}">
+                <div style="{{ sx.sidebarUser }}">{{ loginEmail }}</div>
+                <button onClick="{{ onLogout }}" style="{{ sx.logoutLink }}">Abmelden</button>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ showMobileTopbar }}" hint-placeholder-val="{{ false }}">
+            <div style="{{ sx.mobileTopbar }}">
+              <div style="{{ sx.mobileTopbarTitle }}">{{ mobileTitle }}</div>
+            </div>
+          </sc-if>
+
+          <div style="{{ sx.main }}">
+            <div style="{{ sx.mainInner }}">
+
+              <sc-if value="{{ isDogsRoute }}" hint-placeholder-val="{{ true }}">
+                <div style="{{ sx.headerRow }}">
+                  <div style="{{ sx.h1 }}">Hunde</div>
+                  <button onClick="{{ openNewDogForm }}" style="{{ sx.btnPrimary }}">+ Neuer Hund</button>
+                </div>
+
+                <div style="{{ sx.filterRow }}">
+                  <input type="text" value="{{ dogSearch }}" onChange="{{ onDogSearch }}" placeholder="Name suchen…"
+                    style="{{ sx.searchInput }}" />
+                  <div style="display:flex;gap:8px;">
+                    <button onClick="{{ setFilterAll }}" style="{{ sx.chipAll }}">Alle</button>
+                    <button onClick="{{ setFilterPublished }}" style="{{ sx.chipPublished }}">Veröffentlicht</button>
+                    <button onClick="{{ setFilterDraft }}" style="{{ sx.chipDraft }}">Entwurf</button>
+                  </div>
+                </div>
+
+                <sc-if value="{{ hasVisibleDogs }}" hint-placeholder-val="{{ true }}">
+                  <div style="{{ sx.dogGrid }}">
+                    <sc-for list="{{ visibleDogs }}" as="dog" hint-placeholder-count="3">
+                      <button onClick="{{ dog.openDetail }}" style="{{ sx.dogCard }}">
+                        <div style="{{ sx.dogCardTopRow }}">
+                          <div style="{{ dog.thumbStyle }}">
+                            <sc-if value="{{ dog.noPhoto }}" hint-placeholder-val="{{ true }}">{{ dog.initial }}</sc-if>
+                          </div>
+                          <div style="{{ sx.dogCardBody }}">
+                            <div style="{{ sx.dogCardName }}">{{ dog.name }}</div>
+                            <div style="{{ sx.dogCardMeta }}">{{ dog.ageLabel }} · {{ dog.genderLabel }}</div>
+                          </div>
+                        </div>
+                        <div style="{{ dog.badgeStyle }}">{{ dog.badgeLabel }}</div>
+                      </button>
+                    </sc-for>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ hasNoVisibleDogs }}" hint-placeholder-val="{{ false }}">
+                  <div style="{{ sx.emptyState }}">
+                    <div style="{{ sx.emptyTitle }}">Keine Hunde gefunden</div>
+                    <div style="{{ sx.emptyText }}">Passen Sie die Suche an oder legen Sie einen neuen Hund an.</div>
+                    <button onClick="{{ openNewDogForm }}" style="{{ sx.btnPrimary }}">+ Neuen Hund anlegen</button>
+                  </div>
+                </sc-if>
+              </sc-if>
+
+              <sc-if value="{{ isDogDetailRoute }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ goDogs }}" style="{{ sx.backLink }}">← Zurück zu Hunde</button>
+
+                <div style="{{ sx.detailHeader }}">
+                  <div style="{{ activeDog.thumbStyleLg }}">
+                    <sc-if value="{{ activeDog.noPhoto }}" hint-placeholder-val="{{ true }}">{{ activeDog.initial
+                      }}</sc-if>
+                  </div>
+                  <div style="{{ sx.detailHeaderInfo }}">
+                    <div style="{{ sx.detailName }}">{{ activeDog.name }}</div>
+                    <div style="{{ sx.dogCardMeta }}">{{ activeDog.ageLabel }} · {{ activeDog.genderLabel }}</div>
+                  </div>
+                  <div style="{{ activeDog.badgeStyle }}">{{ activeDog.badgeLabel }}</div>
+                  <div style="{{ sx.detailActions }}">
+                    <button onClick="{{ activeDog.edit }}" style="{{ sx.iconBtn }}" title="Bearbeiten">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="1.8">
+                        <path d="M4 20l4.2-.7L19 8.5a2 2 0 0 0 0-2.8l-.7-.7a2 2 0 0 0-2.8 0L4.7 15.8 4 20Z" />
+                      </svg>
+                    </button>
+                    <button onClick="{{ activeDog.remove }}" style="{{ sx.iconBtnDanger }}" title="Löschen">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="1.8">
+                        <path d="M4 7h16" />
+                        <path d="M9 7V4h6v3" />
+                        <path d="M6 7l1 13h10l1-13" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                <div style="{{ sx.tabRow }}">
+                  <button onClick="{{ setTabUebersicht }}" style="{{ sx.tabUebersicht }}">Übersicht</button>
+                  <button onClick="{{ setTabGesundheit }}" style="{{ sx.tabGesundheit }}">Gesundheit</button>
+                  <button onClick="{{ setTabPruefungen }}" style="{{ sx.tabPruefungen }}">Prüfungen</button>
+                </div>
+
+                <sc-if value="{{ isTabUebersicht }}" hint-placeholder-val="{{ true }}">
+                  <div style="{{ sx.factGrid }}">
+                    <div style="{{ sx.factCard }}">
+                      <div style="{{ sx.factLabel }}">Geburtsdatum</div>
+                      <div style="{{ sx.factValue }}">{{ activeDog.birthLabel }}</div>
+                    </div>
+                    <div style="{{ sx.factCard }}">
+                      <div style="{{ sx.factLabel }}">Geschlecht</div>
+                      <div style="{{ sx.factValue }}">{{ activeDog.genderLabel }}</div>
+                    </div>
+                    <div style="{{ sx.factCard }}">
+                      <div style="{{ sx.factLabel }}">Mutter</div>
+                      <div style="{{ sx.factValue }}">{{ activeDog.motherLabel }}</div>
+                    </div>
+                    <div style="{{ sx.factCard }}">
+                      <div style="{{ sx.factLabel }}">Vater</div>
+                      <div style="{{ sx.factValue }}">{{ activeDog.fatherLabel }}</div>
+                    </div>
+                  </div>
+
+                  <sc-if value="{{ activeDog.isFemale }}" hint-placeholder-val="{{ false }}">
+                    <div style="{{ sx.sectionHeaderRow }}">
+                      <div style="{{ sx.h2 }}">Würfe</div>
+                      <button onClick="{{ openNewLitterForm }}" style="{{ sx.btnSecondary }}">+ Neuer Wurf</button>
+                    </div>
+                    <sc-if value="{{ activeDog.hasLitters }}" hint-placeholder-val="{{ false }}">
+                      <div style="display:flex;flex-direction:column;gap:16px;">
+                        <sc-for list="{{ activeDog.litters }}" as="litter" hint-placeholder-count="1">
+                          <div style="{{ sx.litterCard }}">
+                            <div style="{{ sx.litterCardHead }}">
+                              <div>
+                                <div style="{{ sx.litterTitle }}">Wurf vom {{ litter.dateLabel }}</div>
+                                <div style="{{ sx.litterMeta }}">Vater: {{ litter.father }} · {{ litter.countLabel }}
+                                </div>
+                              </div>
+                              <button onClick="{{ litter.remove }}" style="{{ sx.iconBtnDanger }}" title="Wurf löschen">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                  stroke-width="1.8">
+                                  <path d="M4 7h16" />
+                                  <path d="M9 7V4h6v3" />
+                                  <path d="M6 7l1 13h10l1-13" />
+                                </svg>
+                              </button>
+                            </div>
+                            <div style="{{ sx.saleListWrap }}">
+                              <div style="{{ sx.saleListLabel }}">Verkäufe</div>
+                              <sc-if value="{{ litter.hasSales }}" hint-placeholder-val="{{ false }}">
+                                <sc-for list="{{ litter.sales }}" as="sale" hint-placeholder-count="1">
+                                  <div style="{{ sx.saleRow }}">
+                                    <div style="{{ sx.saleRowText }}">{{ sale.puppyLabel }} → {{ sale.buyerName }} · {{
+                                      sale.dateLabel }} · {{ sale.priceLabel }}</div>
+                                    <button onClick="{{ sale.remove }}" style="{{ sx.iconBtnDangerSmall }}">
+                                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="1.8">
+                                        <path d="M4 7h16" />
+                                        <path d="M9 7V4h6v3" />
+                                        <path d="M6 7l1 13h10l1-13" />
+                                      </svg>
+                                    </button>
+                                  </div>
+                                </sc-for>
+                              </sc-if>
+                              <sc-if value="{{ litter.noSales }}" hint-placeholder-val="{{ true }}">
+                                <div style="{{ sx.saleEmptyText }}">Noch keine Verkäufe erfasst.</div>
+                              </sc-if>
+                              <button onClick="{{ litter.openSaleForm }}" style="{{ sx.linkBtn }}">+ Verkauf
+                                erfassen</button>
+                            </div>
+                          </div>
+                        </sc-for>
+                      </div>
+                    </sc-if>
+                    <sc-if value="{{ activeDog.hasNoLitters }}" hint-placeholder-val="{{ true }}">
+                      <div style="{{ sx.emptyStateSmall }}">Noch keine Würfe erfasst.</div>
+                    </sc-if>
+                  </sc-if>
+                </sc-if>
+
+                <sc-if value="{{ isTabGesundheit }}" hint-placeholder-val="{{ false }}">
+                  <div style="{{ sx.sectionHeaderRow }}">
+                    <div style="{{ sx.h2 }}">Gesundheitschecks</div>
+                    <button onClick="{{ toggleHealthForm }}" style="{{ sx.btnSecondary }}">+ Eintrag hinzufügen</button>
+                  </div>
+
+                  <sc-if value="{{ healthFormOpen }}" hint-placeholder-val="{{ false }}">
+                    <div style="{{ sx.inlineForm }}">
+                      <div style="{{ sx.inlineFormGrid }}">
+                        <div style="display:flex;flex-direction:column;gap:6px;">
+                          <label style="{{ sx.label }}">Datum</label>
+                          <input type="date" value="{{ healthDraft.date }}" onChange="{{ onHealthDate }}"
+                            style="{{ sx.input }}" />
+                        </div>
+                        <div style="display:flex;flex-direction:column;gap:6px;">
+                          <label style="{{ sx.label }}">Art der Untersuchung</label>
+                          <select value="{{ healthDraft.type }}" onChange="{{ onHealthType }}" style="{{ sx.input }}">
+                            <option value="HD/ED-Röntgen">HD/ED-Röntgen</option>
+                            <option value="Herzultraschall">Herzultraschall</option>
+                            <option value="Augenuntersuchung">Augenuntersuchung</option>
+                            <option value="Zahnkontrolle">Zahnkontrolle</option>
+                            <option value="Sonstiges">Sonstiges</option>
+                          </select>
+                        </div>
+                        <div style="display:flex;flex-direction:column;gap:6px;">
+                          <label style="{{ sx.label }}">Ergebnis</label>
+                          <input type="text" value="{{ healthDraft.result }}" onChange="{{ onHealthResult }}"
+                            placeholder="z. B. HD-A" style="{{ sx.input }}" />
+                        </div>
+                        <div style="display:flex;flex-direction:column;gap:6px;">
+                          <label style="{{ sx.label }}">Tierarzt</label>
+                          <input type="text" value="{{ healthDraft.vet }}" onChange="{{ onHealthVet }}"
+                            placeholder="Dr. …" style="{{ sx.input }}" />
+                        </div>
+                        <div style="display:flex;flex-direction:column;gap:6px;grid-column:1 / -1;">
+                          <label style="{{ sx.label }}">Notiz</label>
+                          <input type="text" value="{{ healthDraft.note }}" onChange="{{ onHealthNote }}"
+                            placeholder="Optional" style="{{ sx.input }}" />
+                        </div>
+                      </div>
+                      <div style="{{ sx.inlineFormActions }}">
+                        <button onClick="{{ toggleHealthForm }}" style="{{ sx.btnGhost }}">Abbrechen</button>
+                        <button onClick="{{ saveHealthEntry }}" style="{{ sx.btnPrimary }}">Speichern</button>
+                      </div>
+                    </div>
+                  </sc-if>
+
+                  <sc-if value="{{ activeDog.hasHealth }}" hint-placeholder-val="{{ false }}">
+                    <div style="display:flex;flex-direction:column;gap:10px;">
+                      <sc-for list="{{ activeDog.healthChecks }}" as="hc" hint-placeholder-count="1">
+                        <div style="{{ sx.entryRow }}">
+                          <div>
+                            <div style="{{ sx.entryTitle }}">{{ hc.type }} · {{ hc.dateLabel }}</div>
+                            <div style="{{ sx.entryMeta }}">Ergebnis: {{ hc.result }} · {{ hc.vet }}</div>
+                          </div>
+                          <button onClick="{{ hc.remove }}" style="{{ sx.iconBtnDangerSmall }}">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                              stroke-width="1.8">
+                              <path d="M4 7h16" />
+                              <path d="M9 7V4h6v3" />
+                              <path d="M6 7l1 13h10l1-13" />
+                            </svg>
+                          </button>
+                        </div>
+                      </sc-for>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ activeDog.hasNoHealth }}" hint-placeholder-val="{{ true }}">
+                    <div style="{{ sx.emptyStateSmall }}">Noch keine Gesundheitschecks erfasst.</div>
+                  </sc-if>
+                </sc-if>
+
+                <sc-if value="{{ isTabPruefungen }}" hint-placeholder-val="{{ false }}">
+                  <div style="{{ sx.sectionHeaderRow }}">
+                    <div style="{{ sx.h2 }}">Prüfungen</div>
+                    <button onClick="{{ toggleExamForm }}" style="{{ sx.btnSecondary }}">+ Eintrag hinzufügen</button>
+                  </div>
+
+                  <sc-if value="{{ examFormOpen }}" hint-placeholder-val="{{ false }}">
+                    <div style="{{ sx.inlineForm }}">
+                      <div style="{{ sx.inlineFormGrid }}">
+                        <div style="display:flex;flex-direction:column;gap:6px;">
+                          <label style="{{ sx.label }}">Datum</label>
+                          <input type="date" value="{{ examDraft.date }}" onChange="{{ onExamDate }}"
+                            style="{{ sx.input }}" />
+                        </div>
+                        <div style="display:flex;flex-direction:column;gap:6px;">
+                          <label style="{{ sx.label }}">Prüfungsart</label>
+                          <select value="{{ examDraft.type }}" onChange="{{ onExamType }}" style="{{ sx.input }}">
+                            <option value="Zuchttauglichkeitsprüfung">Zuchttauglichkeitsprüfung</option>
+                            <option value="Wesenstest">Wesenstest</option>
+                            <option value="Ausstellung/Zuchtschau">Ausstellung/Zuchtschau</option>
+                            <option value="Sonstiges">Sonstiges</option>
+                          </select>
+                        </div>
+                        <div style="display:flex;flex-direction:column;gap:6px;">
+                          <label style="{{ sx.label }}">Ergebnis</label>
+                          <input type="text" value="{{ examDraft.result }}" onChange="{{ onExamResult }}"
+                            placeholder="z. B. bestanden" style="{{ sx.input }}" />
+                        </div>
+                        <div style="display:flex;flex-direction:column;gap:6px;">
+                          <label style="{{ sx.label }}">Ort / Verein</label>
+                          <input type="text" value="{{ examDraft.place }}" onChange="{{ onExamPlace }}"
+                            style="{{ sx.input }}" />
+                        </div>
+                        <div style="display:flex;flex-direction:column;gap:6px;grid-column:1 / -1;">
+                          <label style="{{ sx.label }}">Notiz</label>
+                          <input type="text" value="{{ examDraft.note }}" onChange="{{ onExamNote }}"
+                            placeholder="Optional" style="{{ sx.input }}" />
+                        </div>
+                      </div>
+                      <div style="{{ sx.inlineFormActions }}">
+                        <button onClick="{{ toggleExamForm }}" style="{{ sx.btnGhost }}">Abbrechen</button>
+                        <button onClick="{{ saveExamEntry }}" style="{{ sx.btnPrimary }}">Speichern</button>
+                      </div>
+                    </div>
+                  </sc-if>
+
+                  <sc-if value="{{ activeDog.hasExams }}" hint-placeholder-val="{{ false }}">
+                    <div style="display:flex;flex-direction:column;gap:10px;">
+                      <sc-for list="{{ activeDog.exams }}" as="ex" hint-placeholder-count="1">
+                        <div style="{{ sx.entryRow }}">
+                          <div>
+                            <div style="{{ sx.entryTitle }}">{{ ex.type }} · {{ ex.dateLabel }}</div>
+                            <div style="{{ sx.entryMeta }}">Ergebnis: {{ ex.result }} · {{ ex.place }}</div>
+                          </div>
+                          <button onClick="{{ ex.remove }}" style="{{ sx.iconBtnDangerSmall }}">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                              stroke-width="1.8">
+                              <path d="M4 7h16" />
+                              <path d="M9 7V4h6v3" />
+                              <path d="M6 7l1 13h10l1-13" />
+                            </svg>
+                          </button>
+                        </div>
+                      </sc-for>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ activeDog.hasNoExams }}" hint-placeholder-val="{{ true }}">
+                    <div style="{{ sx.emptyStateSmall }}">Noch keine Prüfungen erfasst.</div>
+                  </sc-if>
+                </sc-if>
+              </sc-if>
+
+              <sc-if value="{{ isDogFormRoute }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ cancelDogForm }}" style="{{ sx.backLink }}">← Zurück</button>
+                <div style="{{ sx.h1 }}">{{ dogFormTitle }}</div>
+
+                <div style="{{ sx.formCard }}">
+                  <div style="display:flex;flex-direction:column;gap:6px;">
+                    <label style="{{ sx.label }}">Name *</label>
+                    <input type="text" value="{{ dogFormDraft.name }}" onChange="{{ onDogName }}"
+                      placeholder="z. B. Bella vom Haus Tabitha" style="{{ sx.input }}" />
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:6px;">
+                    <label style="{{ sx.label }}">Geburtsdatum *</label>
+                    <input type="date" value="{{ dogFormDraft.birthDate }}" onChange="{{ onDogBirthDate }}"
+                      style="{{ sx.input }}" />
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:6px;">
+                    <label style="{{ sx.label }}">Geschlecht *</label>
+                    <div style="display:flex;gap:8px;">
+                      <button onClick="{{ setGenderF }}" style="{{ sx.genderPillF }}">Hündin</button>
+                      <button onClick="{{ setGenderM }}" style="{{ sx.genderPillM }}">Rüde</button>
+                    </div>
+                  </div>
+
+                  <div style="{{ sx.divider }}"></div>
+
+                  <div style="display:flex;flex-direction:column;gap:10px;">
+                    <label style="{{ sx.label }}">Mutter in Datenbank?</label>
+                    <div style="display:flex;gap:10px;">
+                      <button onClick="{{ setMotherInDbYes }}" style="{{ sx.radioPillYesM }}">Ja</button>
+                      <button onClick="{{ setMotherInDbNo }}" style="{{ sx.radioPillNoM }}">Nein</button>
+                    </div>
+                    <sc-if value="{{ dogFormDraft.motherInDb }}" hint-placeholder-val="{{ false }}">
+                      <div style="position:relative;">
+                        <input type="text" value="{{ dogFormDraft.motherSearch }}" onChange="{{ onMotherSearch }}"
+                          placeholder="Hündin suchen…" style="{{ sx.input }}" />
+                        <sc-if value="{{ hasMotherResults }}" hint-placeholder-val="{{ false }}">
+                          <div style="{{ sx.searchResults }}">
+                            <sc-for list="{{ motherResults }}" as="m" hint-placeholder-count="1">
+                              <button onClick="{{ m.select }}" style="{{ sx.searchResultItem }}">{{ m.name }}</button>
+                            </sc-for>
+                          </div>
+                        </sc-if>
+                      </div>
+                    </sc-if>
+                    <sc-if value="{{ dogFormDraft.motherNotInDb }}" hint-placeholder-val="{{ true }}">
+                      <div style="{{ sx.freetextGrid }}">
+                        <input type="text" value="{{ dogFormDraft.motherName }}" onChange="{{ onMotherName }}"
+                          placeholder="Name der Mutter" style="{{ sx.input }}" />
+                        <input type="text" value="{{ dogFormDraft.motherKennel }}" onChange="{{ onMotherKennel }}"
+                          placeholder="Zwinger" style="{{ sx.input }}" />
+                      </div>
+                    </sc-if>
+                  </div>
+
+                  <div style="display:flex;flex-direction:column;gap:10px;">
+                    <label style="{{ sx.label }}">Vater in Datenbank?</label>
+                    <div style="display:flex;gap:10px;">
+                      <button onClick="{{ setFatherInDbYes }}" style="{{ sx.radioPillYesV }}">Ja</button>
+                      <button onClick="{{ setFatherInDbNo }}" style="{{ sx.radioPillNoV }}">Nein</button>
+                    </div>
+                    <sc-if value="{{ dogFormDraft.fatherInDb }}" hint-placeholder-val="{{ false }}">
+                      <div style="position:relative;">
+                        <input type="text" value="{{ dogFormDraft.fatherSearch }}" onChange="{{ onFatherSearch }}"
+                          placeholder="Rüde suchen…" style="{{ sx.input }}" />
+                        <sc-if value="{{ hasFatherResults }}" hint-placeholder-val="{{ false }}">
+                          <div style="{{ sx.searchResults }}">
+                            <sc-for list="{{ fatherResults }}" as="f" hint-placeholder-count="1">
+                              <button onClick="{{ f.select }}" style="{{ sx.searchResultItem }}">{{ f.name }}</button>
+                            </sc-for>
+                          </div>
+                        </sc-if>
+                      </div>
+                    </sc-if>
+                    <sc-if value="{{ dogFormDraft.fatherNotInDb }}" hint-placeholder-val="{{ true }}">
+                      <div style="{{ sx.freetextGrid }}">
+                        <input type="text" value="{{ dogFormDraft.fatherName }}" onChange="{{ onFatherName }}"
+                          placeholder="Name des Vaters" style="{{ sx.input }}" />
+                        <input type="text" value="{{ dogFormDraft.fatherKennel }}" onChange="{{ onFatherKennel }}"
+                          placeholder="Zwinger" style="{{ sx.input }}" />
+                      </div>
+                    </sc-if>
+                  </div>
+
+                  <div style="{{ sx.divider }}"></div>
+
+                  <div style="{{ sx.publishRow }}">
+                    <button onClick="{{ togglePublished }}" style="{{ sx.checkboxRow }}">
+                      <span style="{{ checkboxBoxStyle }}">
+                        <sc-if value="{{ dogFormDraft.published }}" hint-placeholder-val="{{ false }}">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="3">
+                            <path d="M4 12l5 5L20 6" />
+                          </svg>
+                        </sc-if>
+                      </span>
+                      <div style="display:flex;flex-direction:column;gap:2px;">
+                        <div style="{{ sx.publishTitle }}">Veröffentlicht</div>
+                        <div style="{{ sx.publishSub }}">Steuert, ob der Hund auf der öffentlichen Website erscheint.
+                        </div>
+                      </div>
+                    </button>
+                  </div>
+
+                  <div style="{{ sx.divider }}"></div>
+
+                  <div style="display:flex;flex-direction:column;gap:10px;">
+                    <label style="{{ sx.label }}">Foto</label>
+                    <sc-if value="{{ photoActive }}" hint-placeholder-val="{{ false }}">
+                      <div style="{{ sx.photoActiveWrap }}">
+                        <sc-if value="{{ dogFormDraft.photo }}" hint-placeholder-val="{{ false }}">
+                          <div style="{{ photoPreviewStyle }}"></div>
+                        </sc-if>
+                        <label style="{{ sx.photoUploadBtn }}">
+                          {{ photoBtnLabel }}
+                          <input type="file" accept="image/*" onChange="{{ onPhotoChange }}" style="display:none;" />
+                        </label>
+                      </div>
+                    </sc-if>
+                    <sc-if value="{{ photoDisabled }}" hint-placeholder-val="{{ true }}">
+                      <div style="{{ sx.photoDisabledWrap }}">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                          stroke-width="1.6">
+                          <rect x="3" y="6" width="18" height="14" rx="2" />
+                          <circle cx="12" cy="13" r="3.5" />
+                          <path d="M8 6l1.5-2h5L16 6" />
+                        </svg>
+                        <div style="{{ sx.photoDisabledText }}">Zuerst speichern, dann Foto hochladen.</div>
+                      </div>
+                    </sc-if>
+                  </div>
+
+                  <sc-if value="{{ justSaved }}" hint-placeholder-val="{{ false }}">
+                    <div style="{{ sx.savedBanner }}">
+                      <div>{{ activeFormDog.name }} wurde gespeichert. Sie können jetzt ein Foto hochladen.</div>
+                      <button onClick="{{ finishDogForm }}" style="{{ sx.btnSecondary }}">Fertig, zur
+                        Detailseite</button>
+                    </div>
+                  </sc-if>
+
+                  <div style="{{ sx.formActions }}">
+                    <button onClick="{{ cancelDogForm }}" style="{{ sx.btnGhost }}">Abbrechen</button>
+                    <button onClick="{{ saveDogForm }}" style="{{ dogSaveBtnStyle }}"
+                      disabled="{{ dogSaveDisabled }}">Speichern</button>
+                  </div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ isLitterFormRoute }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ cancelLitterForm }}" style="{{ sx.backLink }}">← Zurück</button>
+                <div style="{{ sx.h1 }}">Neuer Wurf</div>
+                <div style="{{ sx.formCard }}">
+                  <div style="display:flex;flex-direction:column;gap:6px;">
+                    <label style="{{ sx.label }}">Mutter</label>
+                    <input type="text" value="{{ activeDog.name }}" disabled="{{ true }}"
+                      style="{{ sx.inputDisabled }}" />
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:6px;">
+                    <label style="{{ sx.label }}">Vater</label>
+                    <input type="text" value="{{ litterDraft.father }}" onChange="{{ onLitterFather }}"
+                      placeholder="Name des Vaters" style="{{ sx.input }}" />
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:6px;">
+                    <label style="{{ sx.label }}">Wurfdatum</label>
+                    <input type="date" value="{{ litterDraft.date }}" onChange="{{ onLitterDate }}"
+                      style="{{ sx.input }}" />
+                  </div>
+                  <div style="{{ sx.freetextGrid }}">
+                    <div style="display:flex;flex-direction:column;gap:6px;">
+                      <label style="{{ sx.label }}">Anzahl Rüden</label>
+                      <input type="number" min="0" value="{{ litterDraft.males }}" onChange="{{ onLitterMales }}"
+                        style="{{ sx.input }}" />
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:6px;">
+                      <label style="{{ sx.label }}">Anzahl Hündinnen</label>
+                      <input type="number" min="0" value="{{ litterDraft.females }}" onChange="{{ onLitterFemales }}"
+                        style="{{ sx.input }}" />
+                    </div>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:6px;">
+                    <label style="{{ sx.label }}">Notiz</label>
+                    <input type="text" value="{{ litterDraft.note }}" onChange="{{ onLitterNote }}"
+                      placeholder="Optional" style="{{ sx.input }}" />
+                  </div>
+                  <div style="{{ sx.formActions }}">
+                    <button onClick="{{ cancelLitterForm }}" style="{{ sx.btnGhost }}">Abbrechen</button>
+                    <button onClick="{{ saveLitterForm }}" style="{{ sx.btnPrimary }}">Speichern</button>
+                  </div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ isSaleFormRoute }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ cancelSaleForm }}" style="{{ sx.backLink }}">← Zurück</button>
+                <div style="{{ sx.h1 }}">Verkauf erfassen</div>
+                <div style="{{ sx.formCard }}">
+                  <div style="display:flex;flex-direction:column;gap:6px;">
+                    <label style="{{ sx.label }}">Welpe</label>
+                    <input type="text" value="{{ saleDraft.puppyLabel }}" onChange="{{ onSalePuppy }}"
+                      placeholder="z. B. Welpe 2 (Rüde, braun)" style="{{ sx.input }}" />
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:6px;">
+                    <label style="{{ sx.label }}">Käufer</label>
+                    <select value="{{ saleDraft.buyerId }}" onChange="{{ onSaleBuyer }}" style="{{ sx.input }}">
+                      <option value="">— auswählen —</option>
+                      <sc-for list="{{ buyerOptions }}" as="b" hint-placeholder-count="1">
+                        <option value="{{ b.id }}">{{ b.name }}</option>
+                      </sc-for>
+                    </select>
+                    <button onClick="{{ openBuyerFormFromSale }}" style="{{ sx.linkBtn }}">+ Neuer Käufer
+                      anlegen</button>
+                  </div>
+                  <div style="{{ sx.freetextGrid }}">
+                    <div style="display:flex;flex-direction:column;gap:6px;">
+                      <label style="{{ sx.label }}">Verkaufsdatum</label>
+                      <input type="date" value="{{ saleDraft.date }}" onChange="{{ onSaleDate }}"
+                        style="{{ sx.input }}" />
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:6px;">
+                      <label style="{{ sx.label }}">Preis (CHF)</label>
+                      <input type="number" min="0" value="{{ saleDraft.price }}" onChange="{{ onSalePrice }}"
+                        style="{{ sx.input }}" />
+                    </div>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:6px;">
+                    <label style="{{ sx.label }}">Notiz</label>
+                    <input type="text" value="{{ saleDraft.note }}" onChange="{{ onSaleNote }}" placeholder="Optional"
+                      style="{{ sx.input }}" />
+                  </div>
+                  <div style="{{ sx.formActions }}">
+                    <button onClick="{{ cancelSaleForm }}" style="{{ sx.btnGhost }}">Abbrechen</button>
+                    <button onClick="{{ saveSaleForm }}" style="{{ sx.btnPrimary }}">Speichern</button>
+                  </div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ isBuyerFormRoute }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ cancelBuyerForm }}" style="{{ sx.backLink }}">← Zurück</button>
+                <div style="{{ sx.h1 }}">Neuer Käufer</div>
+                <div style="{{ sx.formCard }}">
+                  <div style="display:flex;flex-direction:column;gap:6px;">
+                    <label style="{{ sx.label }}">Name</label>
+                    <input type="text" value="{{ buyerDraft.name }}" onChange="{{ onBuyerName }}"
+                      placeholder="z. B. Familie Meier" style="{{ sx.input }}" />
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:6px;">
+                    <label style="{{ sx.label }}">Ort</label>
+                    <input type="text" value="{{ buyerDraft.place }}" onChange="{{ onBuyerPlace }}"
+                      style="{{ sx.input }}" />
+                  </div>
+                  <div style="{{ sx.freetextGrid }}">
+                    <div style="display:flex;flex-direction:column;gap:6px;">
+                      <label style="{{ sx.label }}">E-Mail</label>
+                      <input type="email" value="{{ buyerDraft.email }}" onChange="{{ onBuyerEmail }}"
+                        style="{{ sx.input }}" />
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:6px;">
+                      <label style="{{ sx.label }}">Telefon</label>
+                      <input type="text" value="{{ buyerDraft.phone }}" onChange="{{ onBuyerPhone }}"
+                        style="{{ sx.input }}" />
+                    </div>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:6px;">
+                    <label style="{{ sx.label }}">Notiz</label>
+                    <input type="text" value="{{ buyerDraft.note }}" onChange="{{ onBuyerNote }}" placeholder="Optional"
+                      style="{{ sx.input }}" />
+                  </div>
+                  <div style="{{ sx.formActions }}">
+                    <button onClick="{{ cancelBuyerForm }}" style="{{ sx.btnGhost }}">Abbrechen</button>
+                    <button onClick="{{ saveBuyerForm }}" style="{{ sx.btnPrimary }}">Speichern</button>
+                  </div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ isTrashRoute }}" hint-placeholder-val="{{ false }}">
+                <div style="{{ sx.h1 }}">Papierkorb</div>
+                <div style="{{ sx.trashSub }}">Gelöschte Einträge werden nach 30 Tagen endgültig entfernt.</div>
+                <div style="{{ sx.tabRow }}">
+                  <button onClick="{{ setTrashTabHunde }}" style="{{ sx.trashTabHunde }}">Hunde</button>
+                  <button onClick="{{ setTrashTabWuerfe }}" style="{{ sx.trashTabWuerfe }}">Würfe</button>
+                  <button onClick="{{ setTrashTabKaeufer }}" style="{{ sx.trashTabKaeufer }}">Käufer</button>
+                  <button onClick="{{ setTrashTabVerkaeufe }}" style="{{ sx.trashTabVerkaeufe }}">Verkäufe</button>
+                </div>
+
+                <sc-if value="{{ hasVisibleTrash }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;flex-direction:column;gap:10px;">
+                    <sc-for list="{{ visibleTrash }}" as="t" hint-placeholder-count="1">
+                      <div style="{{ sx.trashRow }}">
+                        <div>
+                          <div style="{{ sx.entryTitle }}">{{ t.label }}</div>
+                          <div style="{{ sx.entryMeta }}">Gelöscht am {{ t.deletedLabel }}</div>
+                        </div>
+                        <div style="{{ sx.trashRight }}">
+                          <div style="{{ t.countdownStyle }}">{{ t.daysLeftLabel }}</div>
+                          <button onClick="{{ t.restore }}" style="{{ sx.btnSecondary }}">Wiederherstellen</button>
+                          <button onClick="{{ t.deleteForever }}" style="{{ sx.btnDanger }}">Endgültig löschen</button>
+                        </div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ hasNoVisibleTrash }}" hint-placeholder-val="{{ true }}">
+                  <div style="{{ sx.emptyStateSmall }}">Kein Eintrag in diesem Bereich.</div>
+                </sc-if>
+              </sc-if>
+
+            </div>
+          </div>
+
+          <sc-if value="{{ showBottomTabs }}" hint-placeholder-val="{{ false }}">
+            <div style="{{ sx.bottomTabs }}">
+              <button onClick="{{ goDogs }}" style="{{ sx.bottomTabDogs }}">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M3 10.5 12 4l9 6.5" />
+                  <path d="M5 9.5V19a1 1 0 0 0 1 1h4v-5h4v5h4a1 1 0 0 0 1-1V9.5" />
+                </svg>
+                <span>Hunde</span>
+              </button>
+              <button onClick="{{ goTrash }}" style="{{ sx.bottomTabTrash }}">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M4 7h16" />
+                  <path d="M9 7V4h6v3" />
+                  <path d="M6 7l1 13h10l1-13" />
+                </svg>
+                <span>Papierkorb</span>
+              </button>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ confirmDeleteOpen }}" hint-placeholder-val="{{ false }}">
+        <div style="{{ sx.modalBackdrop }}">
+          <div style="{{ sx.modalCard }}">
+            <div style="{{ sx.modalIcon }}">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M4 7h16" />
+                <path d="M9 7V4h6v3" />
+                <path d="M6 7l1 13h10l1-13" />
+              </svg>
+            </div>
+            <div style="{{ sx.modalTitle }}">{{ confirmDelete.label }} löschen?</div>
+            <div style="{{ sx.modalText }}">{{ confirmDelete.bodyText }}</div>
+            <div style="{{ sx.modalActions }}">
+              <button onClick="{{ closeConfirmDelete }}" style="{{ sx.btnSecondary }}">Abbrechen</button>
+              <button onClick="{{ runConfirmDelete }}" style="{{ sx.btnDanger }}">Löschen</button>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+    </div>
+
+  </x-dc>
+  <script type="text/x-dc" data-dc-script>
+const C = {
+  bg: 'oklch(97% 0.008 250)', surface: 'oklch(99% 0.004 250)', border: 'oklch(90% 0.01 250)',
+  muted: 'oklch(52% 0.02 250)', ink: 'oklch(22% 0.02 250)',
+  accent: 'oklch(90% 0.07 220)', accentStrong: 'oklch(80% 0.09 220)',
+  btnBg: 'oklch(80% 0.09 220)', btnText: 'oklch(20% 0.03 220)', cardFilledBg: 'oklch(93% 0.06 220)',
+  shadow: '0 8px 24px -8px oklch(0% 0 0 / 12%)',
+  mint: 'oklch(90% 0.07 150)', mintText: 'oklch(30% 0.06 150)',
+  blush: 'oklch(90% 0.07 8)', blushStrong: 'oklch(80% 0.09 8)', blushText: 'oklch(32% 0.1 8)',
+  peach: 'oklch(90% 0.07 55)', peachText: 'oklch(35% 0.08 55)'
+};
+const R = { sm: '6px', md: '10px', lg: '14px' };
+const FD = "'Sora',sans-serif";
+const FB = "'Manrope',sans-serif";
+const FM = "'IBM Plex Mono',monospace";
+
+function uid(p) { return p + Math.random().toString(36).slice(2, 9); }
+
+class Component extends DCLogic {
+  state = {
+    loggedIn: false, loginEmail: '', loginPassword: '',
+    isMobile: false,
+    route: { name: 'dogs' },
+    dogSearch: '', dogFilter: 'all',
+    detailTab: 'uebersicht',
+    healthFormOpen: false, examFormOpen: false,
+    healthDraft: { date: '', type: 'HD/ED-Röntgen', result: '', vet: '', note: '' },
+    examDraft: { date: '', type: 'Zuchttauglichkeitsprüfung', result: '', place: '', note: '' },
+    dogFormDraft: null, dogFormMode: 'create', justSaved: false, savedDogId: null,
+    litterDraft: null,
+    saleDraft: null, saleLitterId: null,
+    buyerDraft: null, buyerReturn: null,
+    trashTab: 'hund',
+    confirmDelete: null,
+    dogs: [
+      { id: 'd1', name: 'Bella vom Haus Tabitha', birthDate: '2021-03-14', gender: 'weiblich', photo: null,
+        motherInDb: false, motherId: null, motherName: 'Zilla', motherKennel: 'vom Eichenhof',
+        fatherInDb: false, fatherId: null, fatherName: 'Rocco', fatherKennel: 'vom Eichenhof',
+        published: true,
+        healthChecks: [{ id: 'h1', date: '2023-05-02', type: 'HD/ED-Röntgen', result: 'HD-A / ED-0', vet: 'Dr. Keller', note: '' }],
+        exams: [{ id: 'e1', date: '2022-09-10', type: 'Zuchttauglichkeitsprüfung', result: 'bestanden', place: 'Bern', note: '' }],
+        litters: [{ id: 'l1', date: '2023-06-01', father: 'Rocco vom Eichenhof', males: 4, females: 3, note: 'erster Wurf',
+          sales: [{ id: 's1', buyerId: 'b1', puppyLabel: 'Welpe 2 (Rüde, braun)', date: '2023-08-15', price: '2200', note: '' }] }] },
+      { id: 'd2', name: 'Rocky', birthDate: '2020-11-02', gender: 'männlich', photo: null,
+        motherInDb: false, motherId: null, motherName: 'Luna', motherKennel: 'vom Nordpark',
+        fatherInDb: false, fatherId: null, fatherName: '', fatherKennel: '',
+        published: false, healthChecks: [], exams: [], litters: [] },
+      { id: 'd3', name: 'Luna', birthDate: '2022-07-20', gender: 'weiblich', photo: null,
+        motherInDb: true, motherId: 'd1', motherName: '', motherKennel: '',
+        fatherInDb: false, fatherId: null, fatherName: 'Rocco', fatherKennel: 'vom Eichenhof',
+        published: true, healthChecks: [], exams: [], litters: [] }
+    ],
+    buyers: [{ id: 'b1', name: 'Familie Meier', place: 'Zürich', email: 'meier@example.ch', phone: '079 123 45 67', note: '' }],
+    trash: [
+      { id: 't1', type: 'wurf', label: 'Wurf vom 12.03.2022 (Bella)', deletedAt: Date.now() - 12 * 86400000, snapshot: { id: uid('l'), date: '2022-03-12', father: 'Rocco vom Eichenhof', males: 3, females: 2, note: '', sales: [] }, parentDogId: 'd1' },
+      { id: 't2', type: 'kaeufer', label: 'Familie Huber', deletedAt: Date.now() - 26 * 86400000, snapshot: { id: uid('b'), name: 'Familie Huber', place: 'Basel', email: '', phone: '', note: '' } }
+    ]
+  };
+
+  componentDidMount() {
+    this.checkMobile = () => this.setState({ isMobile: window.innerWidth < 768 });
+    this.checkMobile();
+    window.addEventListener('resize', this.checkMobile);
+  }
+  componentWillUnmount() { window.removeEventListener('resize', this.checkMobile); }
+
+  ageString(birthDate) {
+    if (!birthDate) return '–';
+    const b = new Date(birthDate); const now = new Date();
+    let years = now.getFullYear() - b.getFullYear();
+    let months = now.getMonth() - b.getMonth();
+    if (now.getDate() < b.getDate()) months -= 1;
+    if (months < 0) { years -= 1; months += 12; }
+    if (years <= 0) return `${months} Monate`;
+    return `${years} Jahre${months ? `, ${months} Mon.` : ''}`;
+  }
+  fmtDate(d) {
+    if (!d) return '–';
+    const dt = new Date(d);
+    return dt.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  }
+  findDog(id) { return this.state.dogs.find(d => d.id === id); }
+
+  go(route) { this.setState({ route }); }
+
+  saveDogsArr(mut) {
+    const dogs = this.state.dogs.map(d => ({ ...d }));
+    mut(dogs);
+    this.setState({ dogs });
+  }
+
+  renderVals() {
+    const s = this.state;
+    const dark = false;
+
+    const sx = {
+      page: `background:${C.bg};min-height:100vh;font-family:${FB};color:${C.ink};`,
+      loginWrap: `min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;`,
+      loginCard: `width:100%;max-width:380px;background:${C.surface};border:1px solid ${C.border};border-radius:${R.lg};box-shadow:${C.shadow};padding:36px 32px;display:flex;flex-direction:column;gap:16px;`,
+      loginKicker: `font-family:${FM};font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:${C.muted};`,
+      loginTitle: `font-family:${FD};font-weight:700;font-size:24px;color:${C.ink};margin-top:-6px;`,
+      loginSub: `font-size:14px;color:${C.muted};line-height:1.5;margin-bottom:6px;`,
+      label: `font-family:${FB};font-size:13px;font-weight:600;color:${C.muted};`,
+      input: `font-family:${FB};font-size:15px;padding:11px 14px;min-height:44px;border-radius:${R.md};border:1px solid ${C.border};background:${C.surface};color:${C.ink};outline:none;width:100%;box-sizing:border-box;`,
+      inputDisabled: `font-family:${FB};font-size:15px;padding:11px 14px;min-height:44px;border-radius:${R.md};border:1px solid ${C.border};background:${C.bg};color:${C.muted};width:100%;box-sizing:border-box;`,
+      btnPrimaryFull: `font-family:${FB};font-weight:600;font-size:15px;padding:13px 22px;min-height:48px;border-radius:${R.lg};border:none;cursor:pointer;background:${C.btnBg};color:${C.btnText};margin-top:6px;`,
+      btnPrimary: `font-family:${FB};font-weight:600;font-size:14px;padding:12px 20px;min-height:44px;border-radius:${R.lg};border:none;cursor:pointer;background:${C.btnBg};color:${C.btnText};`,
+      btnSecondary: `font-family:${FB};font-weight:600;font-size:14px;padding:11px 18px;min-height:44px;border-radius:${R.lg};border:1px solid ${C.border};cursor:pointer;background:transparent;color:${C.ink};`,
+      btnGhost: `font-family:${FB};font-weight:600;font-size:14px;padding:11px 18px;min-height:44px;border-radius:${R.lg};border:none;cursor:pointer;background:transparent;color:${C.muted};`,
+      btnDanger: `font-family:${FB};font-weight:600;font-size:14px;padding:11px 18px;min-height:44px;border-radius:${R.lg};border:none;cursor:pointer;background:${C.blushStrong};color:${C.blushText};`,
+      linkBtn: `font-family:${FB};font-weight:600;font-size:13px;color:${C.accentStrong};background:none;border:none;cursor:pointer;text-align:left;padding:2px 0;text-decoration:underline;`,
+
+      shell: `display:flex;flex-direction:${s.isMobile ? 'column' : 'row'};min-height:100vh;`,
+      sidebar: `width:240px;flex:none;background:${C.surface};border-right:1px solid ${C.border};padding:28px 20px;display:flex;flex-direction:column;gap:32px;position:sticky;top:0;height:100vh;`,
+      sidebarBrand: `display:flex;flex-direction:column;gap:2px;`,
+      sidebarBrandName: `font-family:${FD};font-weight:700;font-size:18px;color:${C.ink};`,
+      sidebarBrandKicker: `font-family:${FM};font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:${C.muted};`,
+      sidebarFooter: `margin-top:auto;display:flex;flex-direction:column;gap:8px;border-top:1px solid ${C.border};padding-top:16px;`,
+      sidebarUser: `font-size:12px;color:${C.muted};word-break:break-all;`,
+      logoutLink: `font-family:${FB};font-size:13px;font-weight:600;color:${C.muted};background:none;border:none;cursor:pointer;text-align:left;padding:4px 0;min-height:44px;`,
+      mobileTopbar: `position:sticky;top:0;z-index:5;background:${C.surface};border-bottom:1px solid ${C.border};padding:14px 20px;display:flex;align-items:center;`,
+      mobileTopbarTitle: `font-family:${FD};font-weight:700;font-size:17px;color:${C.ink};`,
+
+      main: `flex:1;min-width:0;padding-bottom:${s.isMobile ? '84px' : '0'};`,
+      mainInner: `max-width:920px;margin:0 auto;padding:${s.isMobile ? '20px 16px 40px' : '40px 40px 80px'};display:flex;flex-direction:column;gap:24px;`,
+
+      headerRow: `display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;`,
+      h1: `font-family:${FD};font-weight:700;font-size:28px;color:${C.ink};`,
+      h2: `font-family:${FD};font-weight:600;font-size:18px;color:${C.ink};`,
+      filterRow: `display:flex;flex-direction:column;gap:12px;`,
+      searchInput: `font-family:${FB};font-size:15px;padding:11px 14px;min-height:44px;border-radius:${R.md};border:1px solid ${C.border};background:${C.surface};color:${C.ink};outline:none;width:100%;box-sizing:border-box;`,
+
+      dogGrid: `display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;`,
+      dogCard: `display:flex;flex-direction:column;align-items:flex-start;gap:12px;text-align:left;background:${C.surface};border:1px solid ${C.border};border-radius:${R.lg};padding:14px;cursor:pointer;min-height:44px;font-family:${FB};width:100%;box-sizing:border-box;`,
+      dogCardTopRow: `display:flex;align-items:center;gap:14px;width:100%;min-width:0;`,
+      dogCardBody: `flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;`,
+      dogCardName: `font-family:${FD};font-weight:600;font-size:16px;color:${C.ink};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;`,
+      dogCardMeta: `font-size:13px;color:${C.muted};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;`,
+
+      emptyState: `display:flex;flex-direction:column;align-items:flex-start;gap:10px;background:${C.surface};border:1px dashed ${C.border};border-radius:${R.lg};padding:40px 32px;`,
+      emptyTitle: `font-family:${FD};font-weight:600;font-size:17px;color:${C.ink};`,
+      emptyText: `font-size:14px;color:${C.muted};margin-bottom:6px;`,
+      emptyStateSmall: `font-size:14px;color:${C.muted};padding:16px 0;`,
+
+      backLink: `font-family:${FB};font-weight:600;font-size:13px;color:${C.muted};background:none;border:none;cursor:pointer;padding:6px 0;align-self:flex-start;min-height:44px;`,
+      detailHeader: `display:flex;align-items:center;gap:16px;flex-wrap:wrap;`,
+      detailThumb: `width:72px;height:72px;border-radius:50%;object-fit:cover;flex:none;`,
+      detailThumbPlaceholder: `width:72px;height:72px;border-radius:50%;background:${C.accent};color:${C.btnText};display:flex;align-items:center;justify-content:center;font-family:${FD};font-weight:700;font-size:26px;flex:none;`,
+      detailHeaderInfo: `display:flex;flex-direction:column;gap:4px;`,
+      detailName: `font-family:${FD};font-weight:700;font-size:22px;color:${C.ink};`,
+      detailActions: `display:flex;gap:8px;margin-left:auto;`,
+      iconBtn: `width:44px;height:44px;border-radius:${R.md};border:1px solid ${C.border};background:${C.surface};color:${C.ink};display:flex;align-items:center;justify-content:center;cursor:pointer;`,
+      iconBtnDanger: `width:44px;height:44px;border-radius:${R.md};border:1px solid ${C.border};background:${C.surface};color:${C.blushText};display:flex;align-items:center;justify-content:center;cursor:pointer;`,
+      iconBtnDangerSmall: `width:32px;height:32px;border-radius:${R.sm};border:none;background:transparent;color:${C.blushText};display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;`,
+
+      tabRow: `display:flex;gap:4px;border-bottom:1px solid ${C.border};flex-wrap:wrap;`,
+      sectionHeaderRow: `display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;`,
+
+      factGrid: `display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;`,
+      factCard: `background:${C.surface};border:1px solid ${C.border};border-radius:${R.md};padding:14px 16px;display:flex;flex-direction:column;gap:4px;`,
+      factLabel: `font-family:${FM};font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:${C.muted};`,
+      factValue: `font-family:${FB};font-size:15px;font-weight:600;color:${C.ink};`,
+
+      litterCard: `background:${C.surface};border:1px solid ${C.border};border-radius:${R.lg};padding:18px;display:flex;flex-direction:column;gap:14px;`,
+      litterCardHead: `display:flex;align-items:flex-start;justify-content:space-between;gap:10px;`,
+      litterTitle: `font-family:${FD};font-weight:600;font-size:15px;color:${C.ink};`,
+      litterMeta: `font-size:13px;color:${C.muted};margin-top:2px;`,
+      saleListWrap: `display:flex;flex-direction:column;gap:8px;border-top:1px solid ${C.border};padding-top:12px;`,
+      saleListLabel: `font-family:${FM};font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:${C.muted};`,
+      saleRow: `display:flex;align-items:center;justify-content:space-between;gap:10px;`,
+      saleRowText: `font-size:13px;color:${C.ink};`,
+      saleEmptyText: `font-size:13px;color:${C.muted};`,
+
+      inlineForm: `background:${C.cardFilledBg};border-radius:${R.lg};padding:20px;display:flex;flex-direction:column;gap:16px;`,
+      inlineFormGrid: `display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;`,
+      inlineFormActions: `display:flex;justify-content:flex-end;gap:10px;`,
+
+      entryRow: `display:flex;align-items:center;justify-content:space-between;gap:10px;background:${C.surface};border:1px solid ${C.border};border-radius:${R.md};padding:12px 14px;`,
+      entryTitle: `font-family:${FB};font-weight:600;font-size:14px;color:${C.ink};`,
+      entryMeta: `font-size:13px;color:${C.muted};margin-top:2px;`,
+
+      formCard: `background:${C.surface};border:1px solid ${C.border};border-radius:${R.lg};padding:28px;display:flex;flex-direction:column;gap:18px;max-width:640px;`,
+      divider: `height:1px;background:${C.border};`,
+      freetextGrid: `display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;`,
+      searchResults: `position:absolute;top:calc(100% + 4px);left:0;right:0;background:${C.surface};border:1px solid ${C.border};border-radius:${R.md};box-shadow:${C.shadow};z-index:2;overflow:hidden;`,
+      searchResultItem: `display:block;width:100%;text-align:left;padding:10px 14px;min-height:44px;background:none;border:none;cursor:pointer;font-family:${FB};font-size:14px;color:${C.ink};`,
+
+      publishRow: `display:flex;align-items:flex-start;gap:16px;`,
+      publishTitle: `font-family:${FB};font-weight:600;font-size:15px;color:${C.ink};`,
+      publishSub: `font-size:13px;color:${C.muted};margin-top:2px;max-width:360px;`,
+      checkboxRow: `display:flex;align-items:flex-start;gap:12px;text-align:left;background:none;border:none;cursor:pointer;padding:0;min-height:44px;font-family:${FB};width:100%;`,
+
+      photoActiveWrap: `display:flex;align-items:center;gap:14px;`,
+      photoPreview: `width:64px;height:64px;border-radius:50%;object-fit:cover;`,
+      photoUploadBtn: `font-family:${FB};font-weight:600;font-size:13px;padding:10px 16px;min-height:44px;border-radius:${R.lg};border:1px solid ${C.border};background:transparent;color:${C.ink};cursor:pointer;display:inline-flex;align-items:center;`,
+      photoDisabledWrap: `display:flex;align-items:center;gap:12px;padding:16px;border-radius:${R.lg};border:1px dashed ${C.border};color:${C.muted};`,
+      photoDisabledText: `font-size:13px;`,
+
+      savedBanner: `display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:${C.cardFilledBg};border-radius:${R.md};padding:14px 16px;font-size:14px;color:${C.ink};`,
+      formActions: `display:flex;justify-content:flex-end;gap:10px;`,
+
+      bottomTabs: `position:fixed;bottom:0;left:0;right:0;background:${C.surface};border-top:1px solid ${C.border};display:flex;z-index:6;`,
+      trashSub: `font-size:14px;color:${C.muted};margin-top:-16px;`,
+      trashRow: `display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;background:${C.surface};border:1px solid ${C.border};border-radius:${R.md};padding:14px 16px;`,
+      trashRight: `display:flex;align-items:center;gap:10px;flex-wrap:wrap;`,
+
+      modalBackdrop: `position:fixed;inset:0;background:oklch(20% 0.02 250 / 0.45);display:flex;align-items:center;justify-content:center;padding:20px;z-index:20;`,
+      modalCard: `background:${C.surface};border-radius:${R.lg};padding:28px;max-width:400px;width:100%;display:flex;flex-direction:column;gap:12px;box-shadow:${C.shadow};`,
+      modalIcon: `width:44px;height:44px;border-radius:50%;background:${C.blush};color:${C.blushText};display:flex;align-items:center;justify-content:center;`,
+      modalTitle: `font-family:${FD};font-weight:700;font-size:18px;color:${C.ink};`,
+      modalText: `font-size:14px;color:${C.muted};line-height:1.5;`,
+      modalActions: `display:flex;justify-content:flex-end;gap:10px;margin-top:6px;`
+    };
+
+    const tabStyle = (active) => `font-family:${FB};font-weight:600;font-size:14px;padding:12px 16px;min-height:44px;border:none;background:none;cursor:pointer;color:${active ? C.ink : C.muted};border-bottom:2px solid ${active ? C.accentStrong : 'transparent'};margin-bottom:-1px;`;
+    const chipStyle = (active) => `font-family:${FB};font-weight:600;font-size:13px;padding:9px 16px;min-height:44px;border-radius:999px;border:1px solid ${active ? C.accentStrong : C.border};background:${active ? C.accent : 'transparent'};color:${C.ink};cursor:pointer;`;
+    const navItemStyle = (active) => `display:flex;align-items:center;gap:10px;padding:11px 12px;min-height:44px;border-radius:${R.md};border:none;background:${active ? C.accent : 'transparent'};color:${C.ink};font-family:${FB};font-weight:600;font-size:14px;cursor:pointer;text-align:left;`;
+    const pillStyle = (active, hue) => `font-family:${FB};font-weight:600;font-size:14px;padding:10px 18px;min-height:44px;border-radius:999px;border:1px solid ${active ? C.accentStrong : C.border};background:${active ? C.accent : 'transparent'};color:${C.ink};cursor:pointer;`;
+    const segmentStyle = (active) => `font-family:${FB};font-weight:600;font-size:14px;padding:11px 20px;min-height:44px;border-radius:${R.lg};border:1px solid ${active ? C.btnBg : C.border};background:${active ? C.btnBg : 'transparent'};color:${active ? C.btnText : C.ink};cursor:pointer;`;
+
+    const badgeStyleFor = (published) => `font-family:${FM};font-size:11px;letter-spacing:0.06em;text-transform:uppercase;padding:5px 12px;border-radius:999px;flex:none;background:${published ? C.mint : 'transparent'};color:${published ? C.mintText : C.muted};border:${published ? 'none' : `1px solid ${C.border}`};`;
+
+    const dogsById = {};
+    s.dogs.forEach(d => dogsById[d.id] = d);
+
+    const dogLabel = (d) => {
+      if (!d) return { motherLabel: '–', fatherLabel: '–' };
+    };
+
+    const decorateDog = (d) => {
+      const motherLabel = d.motherInDb ? (dogsById[d.motherId] ? dogsById[d.motherId].name : '–') : (d.motherName ? `${d.motherName}${d.motherKennel ? ' ' + d.motherKennel : ''}` : '–');
+      const fatherLabel = d.fatherInDb ? (dogsById[d.fatherId] ? dogsById[d.fatherId].name : '–') : (d.fatherName ? `${d.fatherName}${d.fatherKennel ? ' ' + d.fatherKennel : ''}` : '–');
+      const thumbBase = (size) => `width:${size}px;height:${size}px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-family:${FD};font-weight:700;font-size:${Math.round(size * 0.36)}px;color:${C.btnText};background-color:${C.accent};background-size:cover;background-position:center;${d.photo ? `background-image:url(${d.photo});` : ''}`;
+      return {
+        id: d.id, name: d.name, photo: d.photo, noPhoto: !d.photo,
+        initial: d.name.charAt(0).toUpperCase(),
+        thumbStyle: thumbBase(56), thumbStyleLg: thumbBase(72),
+        ageLabel: this.ageString(d.birthDate), genderLabel: d.gender === 'weiblich' ? 'Hündin' : 'Rüde',
+        birthLabel: this.fmtDate(d.birthDate),
+        motherLabel, fatherLabel,
+        isFemale: d.gender === 'weiblich',
+        badgeStyle: badgeStyleFor(d.published), badgeLabel: d.published ? 'Veröffentlicht' : 'Entwurf',
+        hasLitters: (d.litters || []).length > 0, hasNoLitters: (d.litters || []).length === 0,
+        litters: (d.litters || []).map(l => ({
+          id: l.id, dateLabel: this.fmtDate(l.date), father: l.father || '–',
+          countLabel: `${l.males || 0} Rüden, ${l.females || 0} Hündinnen`,
+          hasSales: (l.sales || []).length > 0, noSales: (l.sales || []).length === 0,
+          sales: (l.sales || []).map(sale => ({
+            id: sale.id, puppyLabel: sale.puppyLabel,
+            buyerName: (s.buyers.find(b => b.id === sale.buyerId) || {}).name || '–',
+            dateLabel: this.fmtDate(sale.date), priceLabel: sale.price ? `CHF ${sale.price}` : '–',
+            remove: () => this.openConfirm('verkauf', sale.id, sale.puppyLabel, { dogId: d.id, litterId: l.id })
+          })),
+          openSaleForm: () => this.setState({ route: { name: 'saleForm', litterId: l.id, dogId: d.id }, saleDraft: { puppyLabel: '', buyerId: '', date: '', price: '', note: '' } }),
+          remove: () => this.openConfirm('wurf', l.id, `Wurf vom ${this.fmtDate(l.date)}`, { dogId: d.id })
+        })),
+        hasHealth: (d.healthChecks || []).length > 0, hasNoHealth: (d.healthChecks || []).length === 0,
+        healthChecks: (d.healthChecks || []).map(hc => ({ ...hc, dateLabel: this.fmtDate(hc.date), remove: () => this.openConfirm('gesundheitseintrag', hc.id, `${hc.type}-Eintrag`, { dogId: d.id, permanent: true }) })),
+        hasExams: (d.exams || []).length > 0, hasNoExams: (d.exams || []).length === 0,
+        exams: (d.exams || []).map(ex => ({ ...ex, dateLabel: this.fmtDate(ex.date), remove: () => this.openConfirm('pruefungseintrag', ex.id, `${ex.type}-Eintrag`, { dogId: d.id, permanent: true }) })),
+        openDetail: () => this.setState({ route: { name: 'dogDetail', dogId: d.id }, detailTab: 'uebersicht' }),
+        edit: () => this.openDogForm(d.id),
+        remove: () => this.openConfirm('hund', d.id, d.name, {})
+      };
+    };
+
+    const search = s.dogSearch.trim().toLowerCase();
+    const visibleDogsRaw = s.dogs.filter(d => {
+      if (search && !d.name.toLowerCase().includes(search)) return false;
+      if (s.dogFilter === 'published' && !d.published) return false;
+      if (s.dogFilter === 'draft' && d.published) return false;
+      return true;
+    });
+    const visibleDogs = visibleDogsRaw.map(decorateDog);
+
+    const route = s.route;
+    const activeDogRaw = route.dogId ? dogsById[route.dogId] : null;
+    const activeDog = activeDogRaw ? decorateDog(activeDogRaw) : { name: '', ageLabel: '', genderLabel: '', badgeStyle: '', badgeLabel: '', litters: [] };
+
+    let mobileTitle = 'Hunde';
+    if (route.name === 'dogDetail') mobileTitle = activeDog.name;
+    if (route.name === 'trash') mobileTitle = 'Papierkorb';
+    if (route.name === 'dogForm') mobileTitle = s.dogFormMode === 'edit' ? 'Hund bearbeiten' : 'Neuer Hund';
+    if (route.name === 'litterForm') mobileTitle = 'Neuer Wurf';
+    if (route.name === 'saleForm') mobileTitle = 'Verkauf erfassen';
+    if (route.name === 'buyerForm') mobileTitle = 'Neuer Käufer';
+
+    // dog form
+    const draft = s.dogFormDraft || {};
+    const dogSaveDisabled = !(draft.name && draft.name.trim() && draft.birthDate && draft.gender);
+    const femaleDogs = s.dogs.filter(d => d.gender === 'weiblich' && d.id !== (route.dogId));
+    const maleDogs = s.dogs.filter(d => d.gender === 'männlich' && d.id !== (route.dogId));
+    const motherSearchLower = (draft.motherSearch || '').trim().toLowerCase();
+    const motherResults = motherSearchLower ? femaleDogs.filter(d => d.name.toLowerCase().includes(motherSearchLower)).map(d => ({ name: d.name, select: () => this.setState(st => ({ dogFormDraft: { ...st.dogFormDraft, motherId: d.id, motherSearch: d.name } })) })) : [];
+    const fatherSearchLower = (draft.fatherSearch || '').trim().toLowerCase();
+    const fatherResults = fatherSearchLower ? maleDogs.filter(d => d.name.toLowerCase().includes(fatherSearchLower)).map(d => ({ name: d.name, select: () => this.setState(st => ({ dogFormDraft: { ...st.dogFormDraft, fatherId: d.id, fatherSearch: d.name } })) })) : [];
+
+    const activeFormDog = s.savedDogId ? dogsById[s.savedDogId] : null;
+
+    // litter/sale/buyer drafts
+    const litterDraft = s.litterDraft || { father: '', date: '', males: '', females: '', note: '' };
+    const saleDraft = s.saleDraft || { puppyLabel: '', buyerId: '', date: '', price: '', note: '' };
+    const buyerDraft = s.buyerDraft || { name: '', place: '', email: '', phone: '', note: '' };
+    const buyerOptions = s.buyers.map(b => ({ id: b.id, name: b.name }));
+
+    // trash
+    const trashDecorated = s.trash.map(t => {
+      const daysLeft = Math.max(0, 30 - Math.floor((Date.now() - t.deletedAt) / 86400000));
+      return {
+        id: t.id, type: t.type, label: t.label, deletedLabel: this.fmtDate(new Date(t.deletedAt).toISOString()),
+        daysLeftLabel: `noch ${daysLeft} Tage`,
+        countdownStyle: `font-family:${FM};font-size:11px;padding:5px 10px;border-radius:999px;background:${daysLeft <= 5 ? C.blush : C.peach};color:${daysLeft <= 5 ? C.blushText : C.peachText};white-space:nowrap;`,
+        restore: () => this.restoreTrash(t.id),
+        deleteForever: () => this.openConfirm('permanent', t.id, t.label, { permanent: true, trashId: t.id })
+      };
+    });
+    const visibleTrash = trashDecorated.filter(t => t.type === s.trashTab);
+
+    const confirmDelete = s.confirmDelete ? {
+      ...s.confirmDelete,
+      bodyText: s.confirmDelete.permanent
+        ? 'Dieser Eintrag wird sofort und unwiderruflich entfernt.'
+        : 'Der Eintrag wandert in den Papierkorb und wird nach 30 Tagen automatisch endgültig gelöscht.'
+    } : null;
+
+    const showSidebar = !s.isMobile;
+    const showMobileTopbar = s.isMobile;
+    const showBottomTabs = s.isMobile;
+
+    return {
+      sx,
+      isLoginRoute: !s.loggedIn,
+      isAppRoute: s.loggedIn,
+      loginEmail: s.loginEmail, loginPassword: s.loginPassword,
+      onLoginEmail: (e) => this.setState({ loginEmail: e.target.value }),
+      onLoginPassword: (e) => this.setState({ loginPassword: e.target.value }),
+      onLogin: () => this.setState({ loggedIn: true }),
+      onLogout: () => this.setState({ loggedIn: false, loginPassword: '' }),
+
+      showSidebar, showMobileTopbar, showBottomTabs, mobileTitle,
+
+      goDogs: () => this.setState({ route: { name: 'dogs' } }),
+      goTrash: () => this.setState({ route: { name: 'trash' } }),
+      navItemDogs: navItemStyle(route.name === 'dogs' || route.name === 'dogDetail' || route.name === 'dogForm' || route.name === 'litterForm' || route.name === 'saleForm' || route.name === 'buyerForm'),
+      navItemTrash: navItemStyle(route.name === 'trash'),
+      bottomTabDogs: `flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 0;min-height:56px;background:none;border:none;color:${route.name === 'dogs' || route.name === 'dogDetail' ? C.ink : C.muted};font-family:${FB};font-size:11px;font-weight:600;cursor:pointer;`,
+      bottomTabTrash: `flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 0;min-height:56px;background:none;border:none;color:${route.name === 'trash' ? C.ink : C.muted};font-family:${FB};font-size:11px;font-weight:600;cursor:pointer;`,
+
+      isDogsRoute: route.name === 'dogs',
+      dogSearch: s.dogSearch,
+      onDogSearch: (e) => this.setState({ dogSearch: e.target.value }),
+      setFilterAll: () => this.setState({ dogFilter: 'all' }),
+      setFilterPublished: () => this.setState({ dogFilter: 'published' }),
+      setFilterDraft: () => this.setState({ dogFilter: 'draft' }),
+      chipAll: chipStyle(s.dogFilter === 'all'), chipPublished: chipStyle(s.dogFilter === 'published'), chipDraft: chipStyle(s.dogFilter === 'draft'),
+      visibleDogs, hasVisibleDogs: visibleDogs.length > 0, hasNoVisibleDogs: visibleDogs.length === 0,
+      openNewDogForm: () => this.openDogForm(null),
+
+      isDogDetailRoute: route.name === 'dogDetail',
+      activeDog,
+      isTabUebersicht: s.detailTab === 'uebersicht', isTabGesundheit: s.detailTab === 'gesundheit', isTabPruefungen: s.detailTab === 'pruefungen',
+      setTabUebersicht: () => this.setState({ detailTab: 'uebersicht' }),
+      setTabGesundheit: () => this.setState({ detailTab: 'gesundheit' }),
+      setTabPruefungen: () => this.setState({ detailTab: 'pruefungen' }),
+      tabUebersicht: tabStyle(s.detailTab === 'uebersicht'), tabGesundheit: tabStyle(s.detailTab === 'gesundheit'), tabPruefungen: tabStyle(s.detailTab === 'pruefungen'),
+
+      openNewLitterForm: () => this.setState({ route: { name: 'litterForm', dogId: route.dogId }, litterDraft: { father: '', date: '', males: '', females: '', note: '' } }),
+
+      healthFormOpen: s.healthFormOpen, healthDraft: s.healthDraft,
+      toggleHealthForm: () => this.setState(st => ({ healthFormOpen: !st.healthFormOpen, healthDraft: { date: '', type: 'HD/ED-Röntgen', result: '', vet: '', note: '' } })),
+      onHealthDate: (e) => this.setState(st => ({ healthDraft: { ...st.healthDraft, date: e.target.value } })),
+      onHealthType: (e) => this.setState(st => ({ healthDraft: { ...st.healthDraft, type: e.target.value } })),
+      onHealthResult: (e) => this.setState(st => ({ healthDraft: { ...st.healthDraft, result: e.target.value } })),
+      onHealthVet: (e) => this.setState(st => ({ healthDraft: { ...st.healthDraft, vet: e.target.value } })),
+      onHealthNote: (e) => this.setState(st => ({ healthDraft: { ...st.healthDraft, note: e.target.value } })),
+      saveHealthEntry: () => {
+        const dogId = route.dogId; const hc = { id: uid('h'), ...this.state.healthDraft };
+        this.saveDogsArr(dogs => { const d = dogs.find(x => x.id === dogId); d.healthChecks = [...(d.healthChecks || []), hc]; });
+        this.setState({ healthFormOpen: false });
+      },
+
+      examFormOpen: s.examFormOpen, examDraft: s.examDraft,
+      toggleExamForm: () => this.setState(st => ({ examFormOpen: !st.examFormOpen, examDraft: { date: '', type: 'Zuchttauglichkeitsprüfung', result: '', place: '', note: '' } })),
+      onExamDate: (e) => this.setState(st => ({ examDraft: { ...st.examDraft, date: e.target.value } })),
+      onExamType: (e) => this.setState(st => ({ examDraft: { ...st.examDraft, type: e.target.value } })),
+      onExamResult: (e) => this.setState(st => ({ examDraft: { ...st.examDraft, result: e.target.value } })),
+      onExamPlace: (e) => this.setState(st => ({ examDraft: { ...st.examDraft, place: e.target.value } })),
+      onExamNote: (e) => this.setState(st => ({ examDraft: { ...st.examDraft, note: e.target.value } })),
+      saveExamEntry: () => {
+        const dogId = route.dogId; const ex = { id: uid('e'), ...this.state.examDraft };
+        this.saveDogsArr(dogs => { const d = dogs.find(x => x.id === dogId); d.exams = [...(d.exams || []), ex]; });
+        this.setState({ examFormOpen: false });
+      },
+
+      isDogFormRoute: route.name === 'dogForm',
+      dogFormTitle: s.dogFormMode === 'edit' ? 'Hund bearbeiten' : 'Neuer Hund',
+      dogFormDraft: draft,
+      onDogName: (e) => this.setState(st => ({ dogFormDraft: { ...st.dogFormDraft, name: e.target.value } })),
+      onDogBirthDate: (e) => this.setState(st => ({ dogFormDraft: { ...st.dogFormDraft, birthDate: e.target.value } })),
+      setGenderF: () => this.setState(st => ({ dogFormDraft: { ...st.dogFormDraft, gender: 'weiblich' } })),
+      setGenderM: () => this.setState(st => ({ dogFormDraft: { ...st.dogFormDraft, gender: 'männlich' } })),
+      genderPillF: segmentStyle(draft.gender === 'weiblich'), genderPillM: segmentStyle(draft.gender === 'männlich'),
+
+      setMotherInDbYes: () => this.setState(st => ({ dogFormDraft: { ...st.dogFormDraft, motherInDb: true, motherNotInDb: false } })),
+      setMotherInDbNo: () => this.setState(st => ({ dogFormDraft: { ...st.dogFormDraft, motherInDb: false, motherNotInDb: true } })),
+      radioPillYesM: pillStyle(!!draft.motherInDb), radioPillNoM: pillStyle(!draft.motherInDb),
+      onMotherSearch: (e) => this.setState(st => ({ dogFormDraft: { ...st.dogFormDraft, motherSearch: e.target.value, motherId: null } })),
+      onMotherName: (e) => this.setState(st => ({ dogFormDraft: { ...st.dogFormDraft, motherName: e.target.value } })),
+      onMotherKennel: (e) => this.setState(st => ({ dogFormDraft: { ...st.dogFormDraft, motherKennel: e.target.value } })),
+      hasMotherResults: motherResults.length > 0, motherResults,
+
+      setFatherInDbYes: () => this.setState(st => ({ dogFormDraft: { ...st.dogFormDraft, fatherInDb: true, fatherNotInDb: false } })),
+      setFatherInDbNo: () => this.setState(st => ({ dogFormDraft: { ...st.dogFormDraft, fatherInDb: false, fatherNotInDb: true } })),
+      radioPillYesV: pillStyle(!!draft.fatherInDb), radioPillNoV: pillStyle(!draft.fatherInDb),
+      onFatherSearch: (e) => this.setState(st => ({ dogFormDraft: { ...st.dogFormDraft, fatherSearch: e.target.value, fatherId: null } })),
+      onFatherName: (e) => this.setState(st => ({ dogFormDraft: { ...st.dogFormDraft, fatherName: e.target.value } })),
+      onFatherKennel: (e) => this.setState(st => ({ dogFormDraft: { ...st.dogFormDraft, fatherKennel: e.target.value } })),
+      hasFatherResults: fatherResults.length > 0, fatherResults,
+
+      togglePublished: () => this.setState(st => ({ dogFormDraft: { ...st.dogFormDraft, published: !st.dogFormDraft.published } })),
+      checkboxBoxStyle: `width:22px;height:22px;border-radius:${R.sm};border:1.5px solid ${draft.published ? C.btnBg : C.border};background:${draft.published ? C.btnBg : C.surface};color:${C.btnText};display:flex;align-items:center;justify-content:center;flex:none;margin-top:1px;`,
+
+      photoActive: s.dogFormMode === 'edit', photoDisabled: s.dogFormMode !== 'edit',
+      photoBtnLabel: draft.photo ? 'Foto ändern' : 'Foto auswählen',
+      photoPreviewStyle: `width:64px;height:64px;border-radius:50%;background-size:cover;background-position:center;background-color:${C.accent};${draft.photo ? `background-image:url(${draft.photo});` : ''}`,
+      onPhotoChange: (e) => {
+        const file = e.target.files && e.target.files[0]; if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const url = ev.target.result;
+          this.setState(st => ({ dogFormDraft: { ...st.dogFormDraft, photo: url } }));
+          this.saveDogsArr(dogs => { const d = dogs.find(x => x.id === route.dogId); if (d) d.photo = url; });
+        };
+        reader.readAsDataURL(file);
+      },
+
+      justSaved: s.justSaved, activeFormDog: activeFormDog || { name: '' },
+      finishDogForm: () => this.setState({ route: { name: 'dogDetail', dogId: s.savedDogId }, detailTab: 'uebersicht', justSaved: false }),
+
+      dogSaveDisabled, dogSaveBtnStyle: `font-family:${FB};font-weight:600;font-size:14px;padding:12px 20px;min-height:44px;border-radius:${R.lg};border:none;background:${dogSaveDisabled ? C.border : C.btnBg};color:${dogSaveDisabled ? C.muted : C.btnText};cursor:${dogSaveDisabled ? 'not-allowed' : 'pointer'};`,
+      saveDogForm: () => this.saveDogForm(),
+      cancelDogForm: () => this.setState({ route: s.dogFormMode === 'edit' && route.dogId ? { name: 'dogDetail', dogId: route.dogId } : { name: 'dogs' }, justSaved: false }),
+
+      isLitterFormRoute: route.name === 'litterForm', litterDraft,
+      onLitterFather: (e) => this.setState(st => ({ litterDraft: { ...st.litterDraft, father: e.target.value } })),
+      onLitterDate: (e) => this.setState(st => ({ litterDraft: { ...st.litterDraft, date: e.target.value } })),
+      onLitterMales: (e) => this.setState(st => ({ litterDraft: { ...st.litterDraft, males: e.target.value } })),
+      onLitterFemales: (e) => this.setState(st => ({ litterDraft: { ...st.litterDraft, females: e.target.value } })),
+      onLitterNote: (e) => this.setState(st => ({ litterDraft: { ...st.litterDraft, note: e.target.value } })),
+      saveLitterForm: () => {
+        const dogId = route.dogId; const l = { id: uid('l'), ...this.state.litterDraft, males: Number(this.state.litterDraft.males) || 0, females: Number(this.state.litterDraft.females) || 0, sales: [] };
+        this.saveDogsArr(dogs => { const d = dogs.find(x => x.id === dogId); d.litters = [...(d.litters || []), l]; });
+        this.setState({ route: { name: 'dogDetail', dogId }, detailTab: 'uebersicht' });
+      },
+      cancelLitterForm: () => this.setState({ route: { name: 'dogDetail', dogId: route.dogId }, detailTab: 'uebersicht' }),
+
+      isSaleFormRoute: route.name === 'saleForm', saleDraft, buyerOptions,
+      onSalePuppy: (e) => this.setState(st => ({ saleDraft: { ...st.saleDraft, puppyLabel: e.target.value } })),
+      onSaleBuyer: (e) => this.setState(st => ({ saleDraft: { ...st.saleDraft, buyerId: e.target.value } })),
+      onSaleDate: (e) => this.setState(st => ({ saleDraft: { ...st.saleDraft, date: e.target.value } })),
+      onSalePrice: (e) => this.setState(st => ({ saleDraft: { ...st.saleDraft, price: e.target.value } })),
+      onSaleNote: (e) => this.setState(st => ({ saleDraft: { ...st.saleDraft, note: e.target.value } })),
+      openBuyerFormFromSale: () => this.setState({ route: { name: 'buyerForm' }, buyerDraft: { name: '', place: '', email: '', phone: '', note: '' }, buyerReturn: { dogId: route.dogId, litterId: route.litterId } }),
+      saveSaleForm: () => {
+        const dogId = route.dogId, litterId = route.litterId;
+        const sale = { id: uid('s'), ...this.state.saleDraft };
+        this.saveDogsArr(dogs => { const d = dogs.find(x => x.id === dogId); const l = (d.litters || []).find(x => x.id === litterId); l.sales = [...(l.sales || []), sale]; });
+        this.setState({ route: { name: 'dogDetail', dogId }, detailTab: 'uebersicht' });
+      },
+      cancelSaleForm: () => this.setState({ route: { name: 'dogDetail', dogId: route.dogId }, detailTab: 'uebersicht' }),
+
+      isBuyerFormRoute: route.name === 'buyerForm', buyerDraft,
+      onBuyerName: (e) => this.setState(st => ({ buyerDraft: { ...st.buyerDraft, name: e.target.value } })),
+      onBuyerPlace: (e) => this.setState(st => ({ buyerDraft: { ...st.buyerDraft, place: e.target.value } })),
+      onBuyerEmail: (e) => this.setState(st => ({ buyerDraft: { ...st.buyerDraft, email: e.target.value } })),
+      onBuyerPhone: (e) => this.setState(st => ({ buyerDraft: { ...st.buyerDraft, phone: e.target.value } })),
+      onBuyerNote: (e) => this.setState(st => ({ buyerDraft: { ...st.buyerDraft, note: e.target.value } })),
+      saveBuyerForm: () => {
+        const buyer = { id: uid('b'), ...this.state.buyerDraft };
+        const ret = this.state.buyerReturn;
+        this.setState(st => ({ buyers: [...st.buyers, buyer] }));
+        if (ret) this.setState({ route: { name: 'saleForm', dogId: ret.dogId, litterId: ret.litterId }, saleDraft: { ...(this.state.saleDraft || {}), buyerId: buyer.id }, buyerReturn: null });
+        else this.setState({ route: { name: 'dogs' } });
+      },
+      cancelBuyerForm: () => {
+        const ret = this.state.buyerReturn;
+        if (ret) this.setState({ route: { name: 'saleForm', dogId: ret.dogId, litterId: ret.litterId }, buyerReturn: null });
+        else this.setState({ route: { name: 'dogs' } });
+      },
+
+      isTrashRoute: route.name === 'trash',
+      setTrashTabHunde: () => this.setState({ trashTab: 'hund' }),
+      setTrashTabWuerfe: () => this.setState({ trashTab: 'wurf' }),
+      setTrashTabKaeufer: () => this.setState({ trashTab: 'kaeufer' }),
+      setTrashTabVerkaeufe: () => this.setState({ trashTab: 'verkauf' }),
+      trashTabHunde: tabStyle(s.trashTab === 'hund'), trashTabWuerfe: tabStyle(s.trashTab === 'wurf'), trashTabKaeufer: tabStyle(s.trashTab === 'kaeufer'), trashTabVerkaeufe: tabStyle(s.trashTab === 'verkauf'),
+      visibleTrash, hasVisibleTrash: visibleTrash.length > 0, hasNoVisibleTrash: visibleTrash.length === 0,
+
+      confirmDeleteOpen: !!confirmDelete, confirmDelete: confirmDelete || { label: '' },
+      closeConfirmDelete: () => this.setState({ confirmDelete: null }),
+      runConfirmDelete: () => this.runConfirmDelete()
+    };
+  }
+
+  openDogForm(dogId) {
+    if (dogId) {
+      const d = this.findDog(dogId);
+      this.setState({
+        route: { name: 'dogForm', dogId }, dogFormMode: 'edit', justSaved: false,
+        dogFormDraft: {
+          name: d.name, birthDate: d.birthDate, gender: d.gender, photo: d.photo,
+          motherInDb: d.motherInDb, motherNotInDb: !d.motherInDb, motherId: d.motherId, motherSearch: d.motherInDb && d.motherId ? (this.findDog(d.motherId) || {}).name : '', motherName: d.motherName, motherKennel: d.motherKennel,
+          fatherInDb: d.fatherInDb, fatherNotInDb: !d.fatherInDb, fatherId: d.fatherId, fatherSearch: d.fatherInDb && d.fatherId ? (this.findDog(d.fatherId) || {}).name : '', fatherName: d.fatherName, fatherKennel: d.fatherKennel,
+          published: d.published
+        }
+      });
+    } else {
+      this.setState({
+        route: { name: 'dogForm' }, dogFormMode: 'create', justSaved: false, savedDogId: null,
+        dogFormDraft: { name: '', birthDate: '', gender: '', photo: null, motherInDb: false, motherNotInDb: true, motherId: null, motherSearch: '', motherName: '', motherKennel: '', fatherInDb: false, fatherNotInDb: true, fatherId: null, fatherSearch: '', fatherName: '', fatherKennel: '', published: false }
+      });
+    }
+  }
+
+  saveDogForm() {
+    const draft = this.state.dogFormDraft;
+    if (!draft.name || !draft.birthDate || !draft.gender) return;
+    if (this.state.dogFormMode === 'edit') {
+      const dogId = this.state.route.dogId;
+      this.saveDogsArr(dogs => {
+        const d = dogs.find(x => x.id === dogId);
+        Object.assign(d, {
+          name: draft.name, birthDate: draft.birthDate, gender: draft.gender, published: draft.published,
+          motherInDb: draft.motherInDb, motherId: draft.motherInDb ? draft.motherId : null, motherName: draft.motherName, motherKennel: draft.motherKennel,
+          fatherInDb: draft.fatherInDb, fatherId: draft.fatherInDb ? draft.fatherId : null, fatherName: draft.fatherName, fatherKennel: draft.fatherKennel
+        });
+      });
+      this.setState({ route: { name: 'dogDetail', dogId }, detailTab: 'uebersicht' });
+    } else {
+      const id = uid('d');
+      const newDog = {
+        id, name: draft.name, birthDate: draft.birthDate, gender: draft.gender, photo: null,
+        motherInDb: draft.motherInDb, motherId: draft.motherInDb ? draft.motherId : null, motherName: draft.motherName, motherKennel: draft.motherKennel,
+        fatherInDb: draft.fatherInDb, fatherId: draft.fatherInDb ? draft.fatherId : null, fatherName: draft.fatherName, fatherKennel: draft.fatherKennel,
+        published: draft.published, healthChecks: [], exams: [], litters: []
+      };
+      this.setState(st => ({ dogs: [...st.dogs, newDog], route: { name: 'dogForm', dogId: id }, dogFormMode: 'edit', justSaved: true, savedDogId: id, dogFormDraft: { ...draft, photo: null } }));
+    }
+  }
+
+  openConfirm(type, id, label, extra) {
+    this.setState({ confirmDelete: { type, id, label, ...extra } });
+  }
+
+  runConfirmDelete() {
+    const cd = this.state.confirmDelete;
+    if (!cd) return;
+    if (cd.permanent && cd.trashId) {
+      this.setState(st => ({ trash: st.trash.filter(t => t.id !== cd.trashId), confirmDelete: null }));
+      return;
+    }
+    if (cd.type === 'hund') {
+      const d = this.findDog(cd.id);
+      this.setState(st => ({
+        dogs: st.dogs.filter(x => x.id !== cd.id),
+        trash: [...st.trash, { id: uid('t'), type: 'hund', label: d.name, deletedAt: Date.now(), snapshot: d }],
+        confirmDelete: null, route: { name: 'dogs' }
+      }));
+    } else if (cd.type === 'wurf') {
+      const dogId = cd.dogId;
+      let removed = null;
+      this.saveDogsArr(dogs => { const d = dogs.find(x => x.id === dogId); removed = (d.litters || []).find(l => l.id === cd.id); d.litters = (d.litters || []).filter(l => l.id !== cd.id); });
+      this.setState(st => ({ trash: [...st.trash, { id: uid('t'), type: 'wurf', label: `Wurf vom ${this.fmtDate((removed || {}).date)}`, deletedAt: Date.now(), snapshot: removed, parentDogId: dogId }], confirmDelete: null }));
+    } else if (cd.type === 'verkauf') {
+      const dogId = cd.dogId, litterId = cd.litterId;
+      let removed = null;
+      this.saveDogsArr(dogs => { const d = dogs.find(x => x.id === dogId); const l = (d.litters || []).find(x => x.id === litterId); removed = (l.sales || []).find(sale => sale.id === cd.id); l.sales = (l.sales || []).filter(sale => sale.id !== cd.id); });
+      this.setState(st => ({ trash: [...st.trash, { id: uid('t'), type: 'verkauf', label: (removed || {}).puppyLabel || 'Verkauf', deletedAt: Date.now(), snapshot: removed, parentDogId: dogId, parentLitterId: litterId }], confirmDelete: null }));
+    } else if (cd.type === 'gesundheitseintrag') {
+      const dogId = cd.dogId;
+      this.saveDogsArr(dogs => { const d = dogs.find(x => x.id === dogId); d.healthChecks = (d.healthChecks || []).filter(hc => hc.id !== cd.id); });
+      this.setState({ confirmDelete: null });
+    } else if (cd.type === 'pruefungseintrag') {
+      const dogId = cd.dogId;
+      this.saveDogsArr(dogs => { const d = dogs.find(x => x.id === dogId); d.exams = (d.exams || []).filter(ex => ex.id !== cd.id); });
+      this.setState({ confirmDelete: null });
+    }
+  }
+
+  restoreTrash(trashId) {
+    const t = this.state.trash.find(x => x.id === trashId);
+    if (!t) return;
+    if (t.type === 'hund') {
+      this.setState(st => ({ dogs: [...st.dogs, t.snapshot], trash: st.trash.filter(x => x.id !== trashId) }));
+    } else if (t.type === 'wurf') {
+      this.saveDogsArr(dogs => { const d = dogs.find(x => x.id === t.parentDogId); if (d) d.litters = [...(d.litters || []), t.snapshot]; });
+      this.setState(st => ({ trash: st.trash.filter(x => x.id !== trashId) }));
+    } else if (t.type === 'kaeufer') {
+      this.setState(st => ({ buyers: [...st.buyers, t.snapshot], trash: st.trash.filter(x => x.id !== trashId) }));
+    } else if (t.type === 'verkauf') {
+      this.saveDogsArr(dogs => { const d = dogs.find(x => x.id === t.parentDogId); const l = d && (d.litters || []).find(x => x.id === t.parentLitterId); if (l) l.sales = [...(l.sales || []), t.snapshot]; });
+      this.setState(st => ({ trash: st.trash.filter(x => x.id !== trashId) }));
+    }
+  }
+}
+
+</script>
+</body>
+
+</html>
