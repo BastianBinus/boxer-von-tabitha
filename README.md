@@ -1,4 +1,4 @@
-# Boxer vom Haus Tabitha
+# Boxer vom Hause Tabitha
 
 Website + Datenbank + Admin-Dashboard für einen Boxer-Zwinger. Monorepo aus
 drei Teilen: statische Marketing-/Zuchtbuch-Website, Supabase-Datenbank für
