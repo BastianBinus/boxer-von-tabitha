@@ -7,3 +7,4 @@ dashboard/node_modules/
 .DS_Store
 
 # Ignore the build output directory
+.vercel

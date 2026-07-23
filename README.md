@@ -5,6 +5,17 @@
 > Dokument ersetzt alle vorherigen Planungs-Textdateien — es ist die einzige
 > Quelle der Wahrheit für den Projektstand.
 
+## Live-URLs
+
+| Projekt | URL | Typ |
+|---------|-----|-----|
+| Website | https://boxer-vom-hause-tabitha-98xtjgfvw-anchor-app1.vercel.app | Preview |
+| Dashboard | https://dashboard-delta-seven-67.vercel.app | Production |
+
+Dashboard-Login-Passwort: in `dashboard/.env` als `VITE_ADMIN_PASSWORD`.
+
+---
+
 ## Context
 
 Das Repo (`boxer-von-tabitha`, Monorepo, Default-Branch `main`) war zu
