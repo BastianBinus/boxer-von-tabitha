@@ -12,9 +12,12 @@
   --card-filled-bg: oklch(93% 0.06 220deg);
   --shadow-elevated: 0 8px 24px -8px oklch(0% 0 0deg / 12%);
   --color-cat-blush: oklch(90% 0.07 8deg);
+  --color-cat-blush-strong: oklch(80% 0.09 8deg);
+  --color-cat-blush-text: oklch(32% 0.1 8deg);
   --color-cat-peach: oklch(90% 0.07 55deg);
   --color-cat-butter: oklch(90% 0.07 95deg);
   --color-cat-mint: oklch(90% 0.07 150deg);
+  --color-cat-mint-text: oklch(30% 0.06 150deg);
   --color-cat-lilac: oklch(90% 0.07 300deg);
   --radius-sm: 6px;
   --radius-md: 10px;
@@ -39,9 +42,12 @@
     --card-filled-bg: oklch(32% 0.06 220deg);
     --shadow-elevated: 0 8px 24px -8px oklch(0% 0 0deg / 50%);
     --color-cat-blush: oklch(40% 0.08 8deg);
+    --color-cat-blush-strong: oklch(50% 0.1 8deg);
+    --color-cat-blush-text: oklch(88% 0.06 8deg);
     --color-cat-peach: oklch(40% 0.08 55deg);
     --color-cat-butter: oklch(40% 0.08 95deg);
     --color-cat-mint: oklch(40% 0.08 150deg);
+    --color-cat-mint-text: oklch(88% 0.06 150deg);
     --color-cat-lilac: oklch(40% 0.08 300deg);
   }
 }
@@ -60,8 +66,11 @@
   --card-filled-bg: oklch(32% 0.06 220deg);
   --shadow-elevated: 0 8px 24px -8px oklch(0% 0 0deg / 50%);
   --color-cat-blush: oklch(40% 0.08 8deg);
+  --color-cat-blush-strong: oklch(50% 0.1 8deg);
+  --color-cat-blush-text: oklch(88% 0.06 8deg);
   --color-cat-peach: oklch(40% 0.08 55deg);
   --color-cat-butter: oklch(40% 0.08 95deg);
   --color-cat-mint: oklch(40% 0.08 150deg);
+  --color-cat-mint-text: oklch(88% 0.06 150deg);
   --color-cat-lilac: oklch(40% 0.08 300deg);
 }

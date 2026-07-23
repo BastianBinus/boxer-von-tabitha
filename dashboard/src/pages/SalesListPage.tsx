@@ -30,7 +30,7 @@ export function SalesListPage() {
         <div className="card-list">
           {sales.map(s => (
             <div key={s.id} className="entity-card">
-              <div className="entity-card-thumb">🐶</div>
+              <div className="entity-card-thumb">{s.welpe_label.charAt(0).toUpperCase()}</div>
               <div className="entity-card-info">
                 <div className="entity-card-name">{s.welpe_label}</div>
                 <div className="entity-card-sub">

@@ -26,7 +26,7 @@ export function LittersListPage() {
         <div className="card-list">
           {litters.map(w => (
             <div key={w.id} className="entity-card">
-              <div className="entity-card-thumb">🐾</div>
+              <div className="entity-card-thumb">{w.datum?.slice(0, 4) ?? 'W'}</div>
               <div className="entity-card-info">
                 <div className="entity-card-name">Wurf {w.datum}</div>
                 <div className="entity-card-sub">

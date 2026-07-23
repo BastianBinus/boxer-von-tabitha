@@ -37,7 +37,7 @@ export function BuyersListPage() {
         <div className="card-list">
           {filtered.map(b => (
             <div key={b.id} className="entity-card">
-              <div className="entity-card-thumb">👤</div>
+              <div className="entity-card-thumb">{b.name.charAt(0).toUpperCase()}</div>
               <div className="entity-card-info">
                 <div className="entity-card-name">{b.name}</div>
                 <div className="entity-card-sub">

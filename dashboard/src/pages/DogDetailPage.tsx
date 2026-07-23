@@ -12,6 +12,10 @@ type Tab = 'uebersicht' | 'gesundheit' | 'pruefungen'
 const EMPTY_HC = { kategorie: '', ergebnis: '', datum: '', tierarzt: '', notiz: '' }
 const EMPTY_EX = { art: '', ergebnis: '', datum: '', ort: '', notiz: '' }
 
+function initials(name: string) {
+  return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
+}
+
 export function DogDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
@@ -27,8 +31,8 @@ export function DogDetailPage() {
   const [showExForm, setShowExForm] = useState(false)
   const [exForm, setExForm] = useState(EMPTY_EX)
 
-  if (loading) return <div className="empty-state">Wird geladen…</div>
-  if (!dog) return <div className="empty-state">Hund nicht gefunden.</div>
+  if (loading) return <p style={{ color: 'var(--color-muted)', fontSize: 14 }}>Wird geladen…</p>
+  if (!dog) return <p style={{ color: 'var(--color-muted)', fontSize: 14 }}>Hund nicht gefunden.</p>
 
   const submitHc = async (e: FormEvent) => {
     e.preventDefault()
@@ -46,10 +50,26 @@ export function DogDetailPage() {
 
   return (
     <>
-      <div className="page-header">
-        <h1 className="page-title">{dog.name}</h1>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <Link to={`/hunde/${id}/bearbeiten`} className="btn btn-ghost btn-sm">
+      <Link to="/hunde" className="back-link">← Zurück zu Hunde</Link>
+
+      <div className="detail-header">
+        <div
+          className="detail-avatar"
+          style={dog.foto_url ? { backgroundImage: `url(${dog.foto_url})` } : undefined}
+        >
+          {!dog.foto_url && initials(dog.name)}
+        </div>
+        <div className="detail-header-info">
+          <div className="detail-name">{dog.name}</div>
+          <div style={{ fontSize: 13, color: 'var(--color-muted)' }}>
+            {dog.geschlecht} · {calcAge(dog.geburtsdatum)}
+          </div>
+          <span className={`badge ${dog.veroeffentlicht ? 'badge-live' : 'badge-hidden'}`} style={{ marginTop: 4 }}>
+            {dog.veroeffentlicht ? 'Veröffentlicht' : 'Entwurf'}
+          </span>
+        </div>
+        <div className="detail-actions">
+          <Link to={`/hunde/${id}/bearbeiten`} className="btn btn-secondary btn-sm">
             Bearbeiten
           </Link>
           <button className="btn btn-danger btn-sm" onClick={() => setConfirmDelete(true)}>
@@ -71,41 +91,57 @@ export function DogDetailPage() {
       </div>
 
       {tab === 'uebersicht' && (
-        <div style={{ display: 'flex', gap: 28, flexWrap: 'wrap', alignItems: 'flex-start' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           {dog.foto_url && (
             <img
               src={dog.foto_url}
               alt={dog.name}
-              style={{ width: 160, height: 160, objectFit: 'cover', borderRadius: 'var(--radius-lg)', flexShrink: 0 }}
+              style={{ width: '100%', maxWidth: 320, height: 220, objectFit: 'cover', borderRadius: 'var(--radius-lg)' }}
             />
           )}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <InfoRow label="Alter" value={calcAge(dog.geburtsdatum)} />
-            <InfoRow label="Geburtsdatum" value={dog.geburtsdatum} />
-            <InfoRow label="Geschlecht" value={dog.geschlecht} />
-            <InfoRow label="Status" value={dog.veroeffentlicht ? 'Veröffentlicht' : 'Nicht veröffentlicht'} />
+          <div className="fact-grid">
+            <div className="fact-card">
+              <div className="fact-label">Alter</div>
+              <div className="fact-value">{calcAge(dog.geburtsdatum)}</div>
+            </div>
+            <div className="fact-card">
+              <div className="fact-label">Geburtsdatum</div>
+              <div className="fact-value">{dog.geburtsdatum ?? '—'}</div>
+            </div>
+            <div className="fact-card">
+              <div className="fact-label">Geschlecht</div>
+              <div className="fact-value">{dog.geschlecht ?? '—'}</div>
+            </div>
+            <div className="fact-card">
+              <div className="fact-label">Status</div>
+              <div className="fact-value">{dog.veroeffentlicht ? 'Veröffentlicht' : 'Entwurf'}</div>
+            </div>
             {(dog.mutter_extern_name || dog.mutter_id) && (
-              <InfoRow label="Mutter" value={dog.mutter_extern_name ?? dog.mutter_id ?? '—'} />
+              <div className="fact-card">
+                <div className="fact-label">Mutter</div>
+                <div className="fact-value">{dog.mutter_extern_name ?? dog.mutter_id ?? '—'}</div>
+              </div>
             )}
             {(dog.vater_extern_name || dog.vater_id) && (
-              <InfoRow label="Vater" value={dog.vater_extern_name ?? dog.vater_id ?? '—'} />
+              <div className="fact-card">
+                <div className="fact-label">Vater</div>
+                <div className="fact-value">{dog.vater_extern_name ?? dog.vater_id ?? '—'}</div>
+              </div>
             )}
           </div>
         </div>
       )}
 
       {tab === 'gesundheit' && (
-        <div>
-          <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'flex-end' }}>
-            <button className="btn btn-ghost btn-sm" onClick={() => setShowHcForm(v => !v)}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div className="section-header-row">
+            <div className="section-title">Gesundheitschecks</div>
+            <button className="btn btn-secondary btn-sm" onClick={() => setShowHcForm(v => !v)}>
               {showHcForm ? 'Abbrechen' : '+ Eintrag'}
             </button>
           </div>
           {showHcForm && (
-            <form
-              onSubmit={submitHc}
-              style={{ background: 'var(--color-surface)', padding: 16, borderRadius: 'var(--radius-md)', marginBottom: 20, display: 'flex', flexDirection: 'column', gap: 14 }}
-            >
+            <form onSubmit={submitHc} className="inline-form">
               <div className="form-grid">
                 <div className="field">
                   <label className="field-label">Kategorie *</label>
@@ -135,7 +171,12 @@ export function DogDetailPage() {
             </form>
           )}
           <div className="inline-list">
-            {checks.length === 0 && <div className="empty-state">Noch keine Gesundheitschecks.</div>}
+            {checks.length === 0 && (
+              <div className="empty-state">
+                <div className="empty-state-title">Keine Einträge</div>
+                <div className="empty-state-text">Noch keine Gesundheitschecks erfasst.</div>
+              </div>
+            )}
             {checks.map(c => (
               <div key={c.id} className="inline-row">
                 <div className="inline-row-info">
@@ -145,7 +186,7 @@ export function DogDetailPage() {
                   </div>
                   {c.notiz && <div style={{ fontSize: 12, color: 'var(--color-muted)', marginTop: 2 }}>{c.notiz}</div>}
                 </div>
-                <button className="btn btn-ghost btn-sm" onClick={() => deleteCheck(c.id)}>Löschen</button>
+                <button className="btn btn-ghost btn-sm" style={{ color: 'var(--color-cat-blush-text)' }} onClick={() => deleteCheck(c.id)}>Löschen</button>
               </div>
             ))}
           </div>
@@ -153,17 +194,15 @@ export function DogDetailPage() {
       )}
 
       {tab === 'pruefungen' && (
-        <div>
-          <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'flex-end' }}>
-            <button className="btn btn-ghost btn-sm" onClick={() => setShowExForm(v => !v)}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div className="section-header-row">
+            <div className="section-title">Prüfungen</div>
+            <button className="btn btn-secondary btn-sm" onClick={() => setShowExForm(v => !v)}>
               {showExForm ? 'Abbrechen' : '+ Eintrag'}
             </button>
           </div>
           {showExForm && (
-            <form
-              onSubmit={submitEx}
-              style={{ background: 'var(--color-surface)', padding: 16, borderRadius: 'var(--radius-md)', marginBottom: 20, display: 'flex', flexDirection: 'column', gap: 14 }}
-            >
+            <form onSubmit={submitEx} className="inline-form">
               <div className="form-grid">
                 <div className="field">
                   <label className="field-label">Art *</label>
@@ -193,7 +232,12 @@ export function DogDetailPage() {
             </form>
           )}
           <div className="inline-list">
-            {exams.length === 0 && <div className="empty-state">Noch keine Prüfungen.</div>}
+            {exams.length === 0 && (
+              <div className="empty-state">
+                <div className="empty-state-title">Keine Einträge</div>
+                <div className="empty-state-text">Noch keine Prüfungen erfasst.</div>
+              </div>
+            )}
             {exams.map(ex => (
               <div key={ex.id} className="inline-row">
                 <div className="inline-row-info">
@@ -203,7 +247,7 @@ export function DogDetailPage() {
                   </div>
                   {ex.notiz && <div style={{ fontSize: 12, color: 'var(--color-muted)', marginTop: 2 }}>{ex.notiz}</div>}
                 </div>
-                <button className="btn btn-ghost btn-sm" onClick={() => deleteExam(ex.id)}>Löschen</button>
+                <button className="btn btn-ghost btn-sm" style={{ color: 'var(--color-cat-blush-text)' }} onClick={() => deleteExam(ex.id)}>Löschen</button>
               </div>
             ))}
           </div>
@@ -219,14 +263,5 @@ export function DogDetailPage() {
         />
       )}
     </>
-  )
-}
-
-function InfoRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div style={{ display: 'flex', gap: 12, fontSize: 14 }}>
-      <span style={{ color: 'var(--color-muted)', minWidth: 110, flexShrink: 0 }}>{label}</span>
-      <span style={{ fontWeight: 500, color: 'var(--color-ink)' }}>{value}</span>
-    </div>
   )
 }

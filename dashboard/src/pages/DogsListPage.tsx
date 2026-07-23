@@ -1,72 +1,88 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useDogs } from '../hooks/useDogs'
-import { ConfirmDeleteDialog } from '../components/ConfirmDeleteDialog'
 import { calcAge } from '../lib/calcAge'
 
+type Filter = 'alle' | 'live' | 'entwurf'
+
+function initials(name: string) {
+  return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
+}
+
 export function DogsListPage() {
-  const { dogs, loading, softDelete } = useDogs()
+  const { dogs, loading } = useDogs()
   const [search, setSearch] = useState('')
-  const [deleteId, setDeleteId] = useState<string | null>(null)
+  const [filter, setFilter] = useState<Filter>('alle')
 
-  const filtered = dogs.filter(d =>
-    d.name.toLowerCase().includes(search.toLowerCase())
-  )
+  const filtered = dogs.filter(d => {
+    const matchSearch = d.name.toLowerCase().includes(search.toLowerCase())
+    const matchFilter =
+      filter === 'alle' ? true :
+      filter === 'live' ? d.veroeffentlicht :
+      !d.veroeffentlicht
+    return matchSearch && matchFilter
+  })
 
-  if (loading) return <div className="empty-state">Wird geladen…</div>
+  if (loading) return <p style={{ color: 'var(--color-muted)', fontSize: 14 }}>Wird geladen…</p>
 
   return (
     <>
       <div className="page-header">
         <h1 className="page-title">Hunde</h1>
-        <Link to="/hunde/neu" className="btn btn-primary">+ Neu</Link>
+        <Link to="/hunde/neu" className="btn btn-primary">+ Neuer Hund</Link>
       </div>
 
-      <div className="search-bar">
-        <input
-          className="search-input"
-          placeholder="Nach Name suchen…"
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-        />
+      <input
+        className="search-input"
+        placeholder="Name suchen…"
+        value={search}
+        onChange={e => setSearch(e.target.value)}
+      />
+
+      <div className="chip-group">
+        {(['alle', 'live', 'entwurf'] as Filter[]).map(f => (
+          <button
+            key={f}
+            className={`chip${filter === f ? ' active' : ''}`}
+            onClick={() => setFilter(f)}
+          >
+            {f === 'alle' ? 'Alle' : f === 'live' ? 'Veröffentlicht' : 'Entwurf'}
+          </button>
+        ))}
       </div>
 
       {filtered.length === 0 ? (
-        <div className="empty-state">Keine Hunde gefunden.</div>
+        <div className="empty-state">
+          <div className="empty-state-title">Keine Hunde gefunden</div>
+          <div className="empty-state-text">
+            {search ? `Keine Treffer für „${search}"` : 'Noch keine Hunde angelegt.'}
+          </div>
+          {!search && (
+            <Link to="/hunde/neu" className="btn btn-primary btn-sm" style={{ marginTop: 4 }}>
+              Ersten Hund anlegen
+            </Link>
+          )}
+        </div>
       ) : (
-        <div className="card-list">
+        <div className="dog-grid">
           {filtered.map(dog => (
-            <Link key={dog.id} to={`/hunde/${dog.id}`} className="entity-card">
-              {dog.foto_url ? (
-                <img src={dog.foto_url} alt={dog.name} className="entity-card-thumb" />
-              ) : (
-                <div className="entity-card-thumb">🐕</div>
-              )}
-              <div className="entity-card-info">
-                <div className="entity-card-name">{dog.name}</div>
-                <div className="entity-card-sub">
-                  {dog.geschlecht} · {calcAge(dog.geburtsdatum)}
-                </div>
-              </div>
-              <span className={`badge ${dog.veroeffentlicht ? 'badge-live' : 'badge-hidden'}`}>
-                {dog.veroeffentlicht ? 'Live' : 'Versteckt'}
-              </span>
-              <button
-                className="btn btn-ghost btn-sm"
-                onClick={e => { e.preventDefault(); setDeleteId(dog.id) }}
+            <Link key={dog.id} to={`/hunde/${dog.id}`} className="dog-card">
+              <div
+                className="dog-avatar"
+                style={dog.foto_url ? { backgroundImage: `url(${dog.foto_url})` } : undefined}
               >
-                Löschen
-              </button>
+                {!dog.foto_url && initials(dog.name)}
+              </div>
+              <div className="dog-card-body">
+                <div className="dog-card-name">{dog.name}</div>
+                <div className="dog-card-meta">{calcAge(dog.geburtsdatum)} · {dog.geschlecht}</div>
+                <span className={`badge ${dog.veroeffentlicht ? 'badge-live' : 'badge-hidden'}`}>
+                  {dog.veroeffentlicht ? 'Veröffentlicht' : 'Entwurf'}
+                </span>
+              </div>
             </Link>
           ))}
         </div>
-      )}
-
-      {deleteId && (
-        <ConfirmDeleteDialog
-          onConfirm={async () => { await softDelete(deleteId); setDeleteId(null) }}
-          onCancel={() => setDeleteId(null)}
-        />
       )}
     </>
   )

@@ -44,7 +44,12 @@ export function PhotoUpload({ hundId, currentUrl, onUpload }: Props) {
       {currentUrl ? (
         <img src={currentUrl} alt="Hundefoto" className="photo-preview" />
       ) : (
-        <div className="photo-preview">🐕</div>
+        <div className="photo-preview">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--btn-text)', opacity: 0.5 }}>
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+            <circle cx="12" cy="13" r="4" />
+          </svg>
+        </div>
       )}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
         <button
@@ -59,7 +64,7 @@ export function PhotoUpload({ hundId, currentUrl, onUpload }: Props) {
           <div className="field-hint">Zuerst speichern, dann Foto hochladen.</div>
         )}
         {error && (
-          <div className="field-hint" style={{ color: 'oklch(40% 0.08 8deg)' }}>
+          <div className="field-hint" style={{ color: 'var(--color-cat-blush-text)' }}>
             {error}
           </div>
         )}
