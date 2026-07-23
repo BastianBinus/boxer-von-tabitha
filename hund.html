@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hund — Boxer vom Hause Tabitha</title>
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/fonts.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/site.css">
+</head>
+<body>
+  <div data-partial="header"></div>
+
+  <main class="page-main">
+    <div class="page-inner">
+      <a href="hunde.html" class="back-link">← Zurück zu Hunde</a>
+
+      <div id="hund-content">
+        <div class="hund-header">
+          <div id="hund-foto"></div>
+          <div class="hund-header-info">
+            <h1 id="hund-name" class="page-title"></h1>
+            <p id="hund-meta" class="muted"></p>
+          </div>
+        </div>
+
+        <div id="hund-tabs" class="tabs-container">
+          <div class="tabs-nav" role="tablist">
+            <button role="tab" aria-controls="tab-uebersicht" data-tab="uebersicht" aria-selected="true" class="tab-btn">Übersicht</button>
+            <button role="tab" aria-controls="tab-gesundheit" data-tab="gesundheit" aria-selected="false" class="tab-btn">Gesundheit</button>
+            <button role="tab" aria-controls="tab-pruefungen" data-tab="pruefungen" aria-selected="false" class="tab-btn">Prüfungen</button>
+          </div>
+
+          <div id="tab-uebersicht" role="tabpanel">
+            <div id="tab-uebersicht-content"></div>
+          </div>
+          <div id="tab-gesundheit" role="tabpanel" hidden>
+            <div id="tab-gesundheit-content"></div>
+          </div>
+          <div id="tab-pruefungen" role="tabpanel" hidden>
+            <div id="tab-pruefungen-content"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div data-partial="footer"></div>
+
+  <script type="module" src="js/hund.js"></script>
+</body>
+</html>

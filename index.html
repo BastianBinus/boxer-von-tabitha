@@ -1,23 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- <meta http-equiv="refresh" content="0; url= DesignSystem/Design-System.dc.html"> -->
-    <link rel="stylesheet" href="css/base.css">
-    <link rel="stylesheet" href="css/components.css">
-    <link rel="stylesheet" href="css/fonts.css">
-    <link rel="stylesheet" href="css/tokens.css">
-    <title>Index</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Boxer vom Hause Tabitha</title>
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/fonts.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/site.css">
 </head>
+<body>
+  <div data-partial="header"></div>
 
-<body style="margin: 0; min-height: 100vh; display: flex; justify-content: center; align-items: center;">
-    <a href="DesignSystem/Design-System.dc.html" class="btn btn-primary" style="display: inline-block;">Design
-        System</a>
-    <a href="Admin-Panel-Mockup/zuchtdaten-admin-tool-fixed.dc.html" class="btn btn-primary"
-        style="display: inline-block;">Zuchtdaten Admin-Tool
-        Beispiel</a>
+  <main class="page-main">
+    <div class="page-inner">
+      <h1 class="page-title">Aktuelles</h1>
+      <div id="posts-feed" class="posts-feed"></div>
+    </div>
+  </main>
+
+  <div data-partial="footer"></div>
+
+  <script type="module" src="js/posts.js"></script>
 </body>
-
 </html>
