@@ -1,4 +1,25 @@
 import { supabase } from './supabase-client.js'
+
+function getEmbedUrl(url) {
+  try {
+    const u = new URL(url)
+    if (u.hostname === 'www.youtube.com' || u.hostname === 'youtube.com') {
+      const id = u.searchParams.get('v')
+      if (id) return `https://www.youtube-nocookie.com/embed/${id}`
+    }
+    if (u.hostname === 'youtu.be') {
+      const id = u.pathname.slice(1)
+      if (id) return `https://www.youtube-nocookie.com/embed/${id}`
+    }
+    if (u.hostname === 'vimeo.com' || u.hostname === 'www.vimeo.com') {
+      const id = u.pathname.replace(/^\//, '')
+      if (id) return `https://player.vimeo.com/video/${id}`
+    }
+    return null
+  } catch {
+    return null
+  }
+}
 import { calcAge } from './age.js'
 import { loadPartials } from './partials.js'
 import { initTabs } from './tabs.js'
@@ -108,7 +129,15 @@ async function init() {
   document.getElementById('hund-foto').innerHTML = foto
   document.getElementById('hund-name').textContent = dog.name
   document.getElementById('hund-meta').textContent = `${calcAge(dog.geburtsdatum)} · ${dog.geschlecht}`
-  document.getElementById('tab-uebersicht-content').innerHTML = `<dl class="fact-list">${renderUebersicht(dog)}</dl>`
+  const videoHtml = dog.video_url
+    ? (() => {
+        const embedUrl = getEmbedUrl(dog.video_url)
+        return embedUrl
+          ? `<div class="video-embed"><iframe src="${embedUrl}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen title="Video von ${dog.name}"></iframe></div>`
+          : ''
+      })()
+    : ''
+  document.getElementById('tab-uebersicht-content').innerHTML = `<dl class="fact-list">${renderUebersicht(dog)}</dl>${videoHtml}`
   document.getElementById('tab-gesundheit-content').innerHTML = renderGesundheit(healthRes.data ?? [])
   document.getElementById('tab-pruefungen-content').innerHTML = renderPruefungen(pruefRes.data ?? [])
 

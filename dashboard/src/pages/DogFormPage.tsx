@@ -21,6 +21,7 @@ export function DogFormPage() {
   const [geschlecht, setGeschlecht] = useState('Hündin')
   const [veroeffentlicht, setVeroeffentlicht] = useState(false)
   const [fotoUrl, setFotoUrl] = useState<string | null>(null)
+  const [videoUrl, setVideoUrl] = useState('')
 
   const [mutterMode, setMutterMode] = useState<ParentMode>('extern')
   const [mutterId, setMutterId] = useState('')
@@ -50,6 +51,7 @@ export function DogFormPage() {
     setGeschlecht(dog.geschlecht)
     setVeroeffentlicht(dog.veroeffentlicht)
     setFotoUrl(dog.foto_url)
+    setVideoUrl(dog.video_url ?? '')
     setSavedId(dog.id)
     if (dog.mutter_id) {
       setMutterMode('db')
@@ -80,6 +82,7 @@ export function DogFormPage() {
         geschlecht,
         veroeffentlicht,
         foto_url: fotoUrl,
+        video_url: videoUrl || null,
         mutter_id: mutterMode === 'db' ? (mutterId || null) : null,
         mutter_extern_name: mutterMode === 'extern' ? (mutterExternName || null) : null,
         mutter_extern_zwinger: mutterMode === 'extern' ? (mutterExternZwinger || null) : null,
@@ -163,6 +166,19 @@ export function DogFormPage() {
             currentUrl={fotoUrl}
             onUpload={url => setFotoUrl(url)}
           />
+        </div>
+
+        <div className="field">
+          <label className="field-label" htmlFor="video_url">Video-URL (YouTube / Vimeo)</label>
+          <input
+            id="video_url"
+            className="field-input"
+            type="url"
+            value={videoUrl}
+            onChange={e => setVideoUrl(e.target.value)}
+            placeholder="https://www.youtube.com/watch?v=…"
+          />
+          <div className="field-hint">Optional — wird auf der Profilseite eingebettet.</div>
         </div>
 
         <fieldset>

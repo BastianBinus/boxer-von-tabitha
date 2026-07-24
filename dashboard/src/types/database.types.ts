@@ -69,6 +69,7 @@ export type Database = {
           vater_extern_zwinger: string | null
           vater_id: string | null
           veroeffentlicht: boolean
+          video_url: string | null
         }
         Insert: {
           created_at?: string
@@ -85,6 +86,7 @@ export type Database = {
           vater_extern_zwinger?: string | null
           vater_id?: string | null
           veroeffentlicht?: boolean
+          video_url?: string | null
         }
         Update: {
           created_at?: string
@@ -101,6 +103,7 @@ export type Database = {
           vater_extern_zwinger?: string | null
           vater_id?: string | null
           veroeffentlicht?: boolean
+          video_url?: string | null
         }
         Relationships: [
           {

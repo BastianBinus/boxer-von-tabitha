@@ -12,6 +12,27 @@ type Tab = 'uebersicht' | 'gesundheit' | 'pruefungen'
 const EMPTY_HC = { kategorie: '', ergebnis: '', datum: '', tierarzt: '', notiz: '' }
 const EMPTY_EX = { art: '', ergebnis: '', datum: '', ort: '', notiz: '' }
 
+function getEmbedUrl(url: string): string | null {
+  try {
+    const u = new URL(url)
+    if (u.hostname === 'www.youtube.com' || u.hostname === 'youtube.com') {
+      const id = u.searchParams.get('v')
+      if (id) return `https://www.youtube-nocookie.com/embed/${id}`
+    }
+    if (u.hostname === 'youtu.be') {
+      const id = u.pathname.slice(1)
+      if (id) return `https://www.youtube-nocookie.com/embed/${id}`
+    }
+    if (u.hostname === 'vimeo.com' || u.hostname === 'www.vimeo.com') {
+      const id = u.pathname.replace(/^\//, '')
+      if (id) return `https://player.vimeo.com/video/${id}`
+    }
+    return null
+  } catch {
+    return null
+  }
+}
+
 function initials(name: string) {
   return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()
 }
@@ -99,6 +120,20 @@ export function DogDetailPage() {
               style={{ width: '100%', maxWidth: 320, height: 220, objectFit: 'cover', borderRadius: 'var(--radius-lg)' }}
             />
           )}
+          {dog.video_url && (() => {
+            const embedUrl = getEmbedUrl(dog.video_url!)
+            return embedUrl ? (
+              <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, borderRadius: 'var(--radius-lg)', overflow: 'hidden' }}>
+                <iframe
+                  src={embedUrl}
+                  style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 0 }}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  title={`Video von ${dog.name}`}
+                />
+              </div>
+            ) : null
+          })()}
           <div className="fact-grid">
             <div className="fact-card">
               <div className="fact-label">Alter</div>
