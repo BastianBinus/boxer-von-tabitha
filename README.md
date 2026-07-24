@@ -9,7 +9,7 @@
 
 | Projekt | URL | Typ |
 |---------|-----|-----|
-| Website | https://boxer-vom-hause-tabitha-98xtjgfvw-anchor-app1.vercel.app | Preview |
+| Website | https://boxer-vom-hause-tabitha.vercel.app | Production |
 | Dashboard | https://dashboard-delta-seven-67.vercel.app | Production |
 
 Dashboard-Login-Passwort: in `dashboard/.env` als `VITE_ADMIN_PASSWORD`.
